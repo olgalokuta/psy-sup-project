@@ -20,7 +20,7 @@ services:
       - db
   db:
     container_name: db
-    image: postgres:12
+    image: postgres:16
     environment: # environment variables for the Postgres container
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
