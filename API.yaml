@@ -8,7 +8,7 @@ tags:
   - name: post
     description: Post operations
 paths:
-  /user:
+  /api/users:
     post:
       tags:
         - user
@@ -51,7 +51,7 @@ paths:
                   $ref: '#/components/schemas/User'
         '500':
           description: Server error
-  /user/{id}:
+  /api/users/{id}:
     parameters:
     - name: id
       in: path
@@ -116,7 +116,7 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-  /post:
+  /api/posts:
     post:
       tags:
         - post
@@ -158,7 +158,7 @@ paths:
                   $ref: '#/components/schemas/Post'
         '500':
           description: Server error
-  /post/user/{id}:
+  /api/posts/user/{id}:
     parameters:
     - name: id
       in: path
@@ -183,7 +183,7 @@ paths:
                   $ref: '#/components/schemas/Post'
         '500':
           description: Server error
-  /post/{id}:
+  /api/posts/{id}:
     parameters:
     - name: id
       in: path
