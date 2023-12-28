@@ -13,7 +13,7 @@ class UserController(@Autowired private val userRepository: UserRepository) {
     fun getAllUsers(): List<User> =
         userRepository.findAll().toList()
 
-    @PutMapping("")
+    @PostMapping("")
     fun createUser(@RequestBody user: User): ResponseEntity<User> {
         val createdUser = userRepository.save(user)
         return ResponseEntity(createdUser, HttpStatus.CREATED)
@@ -63,7 +63,7 @@ class PostController(@Autowired private val postRepository: PostRepository) {
     fun getAllUserPosts(@PathVariable("uid") userId: Int): List<Post> =
         postRepository.findByUserid(userId).toList()
 
-    @PutMapping("")
+    @PostMapping("")
     fun createPost(@RequestBody post: Post): ResponseEntity<Post> {
         val createdPost = postRepository.save(post)
         return ResponseEntity(createdPost, HttpStatus.CREATED)
