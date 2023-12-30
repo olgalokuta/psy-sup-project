@@ -1,0 +1,35 @@
+package com.example.psysupapplication
+
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
+
+interface UserAPI {
+    @GET("users")
+    fun getAllUsers() : List<User>
+
+    @GET("users/{id}")
+    suspend fun getUserById(
+        @Path("id") id: Int
+    ) : User
+
+    @PUT("users")
+    suspend fun createUser(
+        @Body noIdUser : UserWithoutId
+    ) : User
+
+    @PUT("users/{id}")
+    suspend fun updateUser(
+        @Path("id") id: Int,
+        @Body noIdUser : UserWithoutId
+    ) : User
+
+    @DELETE("users/{id}")
+    suspend fun deleteUser(
+        @Path("id") id: Int
+    ) //: Response<ResponseBody>
+}
