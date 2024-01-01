@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -54,6 +56,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -75,78 +78,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val state = remember {
-                mutableStateOf("Identification")
+                mutableStateOf(false)
             }
-            //mainPage()
+            //TestRetrofit()
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
-                    "Identification" -> IdentityPage(state)
+                    false -> IdentityPage(state)
                     else -> MainPage()
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun IdentityPage(stage : MutableState<String>) : Unit {
-    var password by rememberSaveable { mutableStateOf("") }
-    var nickname by remember { mutableStateOf(TextFieldValue("")) }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(fraction = 0.7f),
-        contentAlignment = Alignment.Center
-    ) {
-        Column (
-            modifier = Modifier
-                .fillMaxWidth(fraction = 0.9f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(modifier = Modifier.padding(10.dp)) {
-                Text(
-                    text = "Добро пожаловать!",
-                    fontSize = 44.sp,
-                    textAlign = TextAlign.Left,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(start = 20.dp)
-                        .fillMaxWidth()
-                )
-            }
-
-            TextField(
-                value = nickname,
-                onValueChange = {
-                    nickname = it
-                },
-                label = { Text(text = "Ваш никнейм") },
-                placeholder = { Text(text = "Введите никнейм") }
-            )
-
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Ваш пароль") },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ){
-                Button(
-                    onClick = {
-                        stage.value = "MainPage"
-                    },
-                    modifier = Modifier.fillMaxWidth(fraction = 0.7f)
-                ) {
-                    Text(
-                        text = "Войти",
-                        fontSize = 20.sp
-                    )
                 }
             }
         }
@@ -155,154 +93,25 @@ fun IdentityPage(stage : MutableState<String>) : Unit {
 
 @Composable
 fun MainPage() : Unit {
-    val u = User(
-        1,
-        "username",
-        "email@gamil.com",
-        "898788888"
-    )
-
-    val text = "Чувство юмора — самое важное качество в человеке. " +
-            "Смех избавляет от массы проблем. Чувствуешь, что накрывает, улыбнись, " +
-            "расслабься — все пройдет!"
-
-    val post = Post (1, 1,"12.12.23",text)
-    Box(modifier = Modifier.fillMaxWidth()){
-        LazyColumn {
-            item { CreatePostBox() }
-            item {
-                Box(modifier = Modifier.padding(start = 10.dp)) {
-                    Text(
-                        text = "Посты других пользователей",
-                        fontSize = 28.sp,
-                        textAlign = TextAlign.Left,
-                        maxLines = 10,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-            item { Spacer(modifier = Modifier.height(10.dp)) }
-            items(10){
-                ViewPost(u, post)
-            }
-        }
+    val state = remember {
+        mutableStateOf("PostsPage")
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CreatePostBox() :Unit {
-    var text by remember { mutableStateOf("") }
-    Box(
+    Column(
         modifier = Modifier
-            .padding(top = 25.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.TopCenter
+            .fillMaxWidth()
+            .fillMaxHeight()
     ){
-        Column (
-            verticalArrangement = Arrangement.SpaceAround,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextField(
-                value = text, onValueChange = { text = it },
-                label = { Text(text = "Твой пост", fontSize = 24.sp)},
-                modifier = Modifier
-                    .fillMaxWidth(fraction = 0.9f)
-                    .defaultMinSize(minHeight = 150.dp),
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ){
-                Button(
-                    onClick = {},
-                    modifier = Modifier.fillMaxWidth(fraction = 0.7f)
-                ) {
-                    Text(
-                        text = "Создать пост",
-                        fontSize = 20.sp
-                    )
-                }
+        Crossfade(targetState = state, label = "") { currentSt ->
+            when (currentSt.value) {
+                "PostsPage" -> PostsPage()
+                "CreatePostPage" -> CreatePage()
+                "ProfilePage" -> PostsPage()
             }
-            Spacer(modifier = Modifier.height(50.dp))
         }
+        BottomPanel(state)
     }
 }
 
-@Composable
-fun ViewUserInPost(u : User, data : String) : Unit {
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        modifier = Modifier
-            .fillMaxWidth(fraction = 0.9f)
-            .padding(10.dp)
-            .height(70.dp)
-            .clip(shape = RoundedCornerShape(20.dp))
-            .background(Color.White),
-        shape = RoundedCornerShape(15.dp)
-    ) {
-        Row {
-            Image(
-                painter = painterResource(id = R.drawable.default_avatar),
-                contentDescription = "Default avatar",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(5.dp)
-                    .clip(RoundedCornerShape(50))
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(fraction = 0.8f)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column (
-                    modifier = Modifier
-                        .fillMaxHeight(fraction = 0.8f),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(
-                        text = u.username,
-                        fontSize = 24.sp
-                    )
-                    Text(text = data, fontSize = 20.sp)
-                }
-            }
-        }
-    }
-}
-@Composable
-fun ViewPost(user : User, p : Post) : Unit {
-    Box(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
-        Column {
-            ViewUserInPost(u = user, data = p.date)
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(fraction = 0.9f)
-                    .defaultMinSize(minHeight = 80.dp)
-                    .clip(shape = RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                Text(
-                    text = p.text,
-                    modifier = Modifier.padding(15.dp),
-                    fontSize = 24.sp
-                )
-            }
-        }
-    }
-}
 /*
 fun sendRequest(id : Int) {
     var user : User
@@ -319,9 +128,32 @@ fun sendRequest(id : Int) {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    /*
+
     val api = retrofit.create(UserAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
         var user = api.getUserById(id)
-    }*/
-}*/
+    }
+}
+*/
+
+/*
+fun TestRetrofit() : Unit {
+    val interceptor = HttpLoggingInterceptor()
+    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://dummyjson.com/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val api = retrofit.create(ProductApi::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        var user = api.getProduct(1)
+    }
+}
+*/

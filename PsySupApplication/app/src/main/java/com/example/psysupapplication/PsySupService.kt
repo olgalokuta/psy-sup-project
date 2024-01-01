@@ -33,3 +33,10 @@ interface UserAPI {
         @Path("id") id: Int
     ) //: Response<ResponseBody>
 }
+
+/*
+interface ProductApi{
+    @GET("products/{id}")
+    suspend fun getProduct(@Path("id") id: Int) : Product
+}
+*/
