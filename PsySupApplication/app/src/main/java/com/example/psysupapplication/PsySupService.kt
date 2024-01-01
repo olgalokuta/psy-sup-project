@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface UserAPI {
     @GET("users")
-    fun getAllUsers() : List<User>
+    suspend fun getAllUsers() : List<User>
 
     @GET("users/{id}")
     suspend fun getUserById(

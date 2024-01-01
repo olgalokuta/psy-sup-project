@@ -81,6 +81,7 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
             //TestRetrofit()
+            sendRequest(2)
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
                     false -> IdentityPage(state)
@@ -112,9 +113,8 @@ fun MainPage() : Unit {
     }
 }
 
-/*
 fun sendRequest(id : Int) {
-    var user : User
+    var user : List<User>
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -124,17 +124,17 @@ fun sendRequest(id : Int) {
 
     //http://127.0.0.1:8080/api/users/
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://local:8080/api/")
+        .baseUrl("http://10.0.2.2:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     val api = retrofit.create(UserAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        var user = api.getUserById(id)
+        var user = api.getAllUsers()
     }
 }
-*/
+
 
 /*
 fun TestRetrofit() : Unit {
