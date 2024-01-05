@@ -82,10 +82,16 @@ class MainActivity : ComponentActivity() {
             }
             //TestRetrofit()
             sendRequest(2)
+            val u = User(
+                1,
+                "username",
+                "email@gamil.com",
+                "898788888"
+            )
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
                     false -> IdentityPage(state)
-                    else -> MainPage()
+                    else -> MainPage(u)
                 }
             }
         }
@@ -93,7 +99,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainPage() : Unit {
+fun MainPage(u : User) : Unit {
     val state = remember {
         mutableStateOf("PostsPage")
     }
@@ -105,7 +111,7 @@ fun MainPage() : Unit {
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
                 "PostsPage" -> PostsPage()
-                "CreatePostPage" -> CreatePage()
+                "CreatePostPage" -> CreatePage(u)
                 "ProfilePage" -> PostsPage()
             }
         }
