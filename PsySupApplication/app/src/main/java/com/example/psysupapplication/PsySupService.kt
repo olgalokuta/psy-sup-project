@@ -5,6 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
@@ -32,6 +33,16 @@ interface UserAPI {
     suspend fun deleteUser(
         @Path("id") id: Int
     ) //: Response<ResponseBody>
+}
+
+interface PostAPI {
+    @GET("posts")
+    suspend fun getAllPosts() : List<Post>
+
+    @POST("posts")
+    suspend fun createPost(
+        @Body noIdPost : PostWithoutId
+    ) : Post
 }
 
 /*

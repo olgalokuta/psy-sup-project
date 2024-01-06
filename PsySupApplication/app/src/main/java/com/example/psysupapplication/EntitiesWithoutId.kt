@@ -4,3 +4,10 @@ data class UserWithoutId(
     var email: String,
     var phone: String
 )
+
+data class PostWithoutId(
+    val userid: Int,
+    val date: String,
+    val text: String
+)
+
