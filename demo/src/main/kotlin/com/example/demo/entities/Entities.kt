@@ -1,6 +1,8 @@
 package com.example.demo.entities
 
 import jakarta.persistence.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
@@ -11,7 +13,10 @@ data class User(
     val username: String,
     val email: String,
     val phone: String,
-    val birthday: String
+    val birthday: LocalDate,
+    val pfp: Int,
+    val gender: Boolean,
+    val topics: List <Int>
 )
 
 @Entity
@@ -20,7 +25,10 @@ data class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
-    val userid: Int,
-    val date: String,
-    val text: String
+    val iduser: Int,
+    val posted: LocalDateTime,
+    val content: String, 
+    val moderated: Boolean, 
+    val public: Boolean,
+    val topics: List<Int>
 )

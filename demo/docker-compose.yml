@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
       args: # these are the arguments that are passed to the dockerfile
         DB_URL: ${DB_URL} 
-        PG_USER: ${PG_USER}
-        PG_PASSWORD: ${PG_PASSWORD}
+        PG_USER: ${POSTGRES_USER}
+        PG_PASSWORD: ${POSTGRES_PASSWORD}
     ports: # port exposed to the host machine
       - "8080:8080"
     environment: # these are the environment variables that are passed to the dockerfile
@@ -21,6 +21,7 @@ services:
   db:
     container_name: db
     image: postgres:16
+    restart: always
     environment: # environment variables for the Postgres container
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -28,7 +29,8 @@ services:
     ports: # port exposed to the host machine
       - "5432:5432"
     volumes: # volume used to persist data
-      - pgdata:/var/lib/postgresql/data
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
 
 volumes: # volume creation
   pgdata: {}

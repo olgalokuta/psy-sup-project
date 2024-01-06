@@ -61,7 +61,7 @@ class PostController(@Autowired private val postRepository: PostRepository) {
 
     @GetMapping("/user/{uid}")
     fun getAllUserPosts(@PathVariable("uid") userId: Int): List<Post> =
-        postRepository.findByUserid(userId).toList()
+        postRepository.findByIduser(userId).toList()
 
     @PostMapping("")
     fun createPost(@RequestBody post: Post): ResponseEntity<Post> {
@@ -85,7 +85,7 @@ class PostController(@Autowired private val postRepository: PostRepository) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
-        val updatedPost = existingPost.copy(userid = post.userid, date = post.date, text = post.text)
+        val updatedPost = existingPost.copy(iduser = post.iduser, posted = post.posted, content = post.content)
         postRepository.save(updatedPost)
         return ResponseEntity(updatedPost, HttpStatus.OK)
     }
