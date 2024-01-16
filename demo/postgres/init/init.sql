@@ -4,6 +4,7 @@ create table "User" (
 	phone text UNIQUE,       -- номер телефона при регистрации
 	email text,              -- почта при регистрации
 	username text UNIQUE,           -- имя пользователя
+	password text,
 	pfp integer,                -- фото/аватарка
 	gender boolean,             -- гендер
 	birthdate date,          -- дата рождения, при регистрации

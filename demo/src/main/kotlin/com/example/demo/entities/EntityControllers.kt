@@ -36,7 +36,9 @@ class UserController(@Autowired private val userRepository: UserRepository) {
         }
 
         val updatedUser = existingUser.copy(username = user.username, 
-            email = user.email, phone = user.phone)
+            email = user.email, phone = user.phone, password = user.password,
+            birthday = user.birthday, pfp = user.pfp, gender = user.gender, 
+            topics = user.topics)
         userRepository.save(updatedUser)
         return ResponseEntity(updatedUser, HttpStatus.OK)
     }
@@ -85,7 +87,9 @@ class PostController(@Autowired private val postRepository: PostRepository) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
-        val updatedPost = existingPost.copy(iduser = post.iduser, posted = post.posted, content = post.content)
+        val updatedPost = existingPost.copy(iduser = post.iduser, posted = post.posted, 
+            content = post.content, moderated = post.moderated, public = post.public, 
+            topics = post.topics)
         postRepository.save(updatedPost)
         return ResponseEntity(updatedPost, HttpStatus.OK)
     }
