@@ -1,5 +1,7 @@
 package com.example.psysupapplication
 
+import android.adservices.topics.Topic
+
 data class User (
     var id: Int,
     var username: String,
@@ -9,7 +11,10 @@ data class User (
 
 data class Post(
     val id: Int,
-    val userid: Int,
-    val date: String,
-    val text: String
+    val iduser: Int,
+    val posted: String,
+    val content: String,
+    val moderated: Boolean,
+    val public: Boolean,
+    val topics: List<Int>
 )

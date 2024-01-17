@@ -34,7 +34,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,8 +82,7 @@ fun CreatePage(u : User) : Unit {
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Button(
-                        onClick =
-                            {
+                        onClick = {
                                 if (text != "") {
                                     createPost(u.id, text)
                                     dialogOpen = true
@@ -123,9 +121,16 @@ fun CreatePage(u : User) : Unit {
 }
 
 fun createPost (userId : Int, text : String) : Unit {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy")
-    val date = dateFormat.format(Date())
-    val postNoId = PostWithoutId(userId, date, text)
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
+    val currentDate = sdf.format(Date())
+    val postNoId = PostWithoutId(
+        iduser = userId,
+        posted = currentDate,
+        content = text,
+        moderated = false,
+        public = true,
+        topics = emptyList()
+    )
 
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY

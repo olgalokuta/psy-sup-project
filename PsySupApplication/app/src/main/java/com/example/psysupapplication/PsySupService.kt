@@ -39,15 +39,13 @@ interface PostAPI {
     @GET("posts")
     suspend fun getAllPosts() : List<Post>
 
+    @GET("posts/user/{id}")
+    suspend fun getUserPosts(
+        @Path("id") id: Int
+    ) : List<Post>
+
     @POST("posts")
     suspend fun createPost(
         @Body noIdPost : PostWithoutId
     ) : Post
 }
-
-/*
-interface ProductApi{
-    @GET("products/{id}")
-    suspend fun getProduct(@Path("id") id: Int) : Product
-}
-*/
