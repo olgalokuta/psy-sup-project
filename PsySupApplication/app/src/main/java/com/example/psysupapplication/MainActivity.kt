@@ -80,13 +80,17 @@ class MainActivity : ComponentActivity() {
             val state = remember {
                 mutableStateOf(false)
             }
-            //TestRetrofit()
-            //sendRequest(2)
+
             val u = User(
                 1,
                 "username",
                 "email@gamil.com",
-                "898788888"
+                "898788888",
+                "1234",
+                1,
+                true,
+                "2003-01-01",
+                emptyList()
             )
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
@@ -111,9 +115,9 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage()
+                "PostsPage" -> PostsPage(u)
                 "CreatePostPage" -> CreatePage(u)
-                "ProfilePage" -> PostsPage()
+                "ProfilePage" -> PostsPage(u)
             }
         }
         BottomPanel(state)
