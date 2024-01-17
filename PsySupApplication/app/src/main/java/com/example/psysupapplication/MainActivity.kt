@@ -85,7 +85,12 @@ class MainActivity : ComponentActivity() {
                 1,
                 "username",
                 "email@gamil.com",
-                "898788888"
+                "898788888",
+                "1234",
+                1,
+                true,
+                "2003-01-01",
+                emptyList()
             )
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
