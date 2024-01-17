@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
             //TestRetrofit()
-            sendRequest(2)
+            //sendRequest(2)
             val u = User(
                 1,
                 "username",

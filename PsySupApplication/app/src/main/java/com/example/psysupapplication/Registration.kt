@@ -28,12 +28,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IdentityPage(stage : MutableState<Boolean>) : Unit {
+fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
     var password by rememberSaveable { mutableStateOf("") }
-    var nickname by remember { mutableStateOf(TextFieldValue("")) }
+    var username by remember { mutableStateOf(TextFieldValue(""))}
+    var email by remember { mutableStateOf(TextFieldValue(""))}
+    var phone by remember { mutableStateOf(TextFieldValue(""))}
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,8 +51,8 @@ fun IdentityPage(stage : MutableState<Boolean>) : Unit {
         ) {
             Box(modifier = Modifier.padding(10.dp)) {
                 Text(
-                    text = "Добро пожаловать!",
-                    fontSize = 44.sp,
+                    text = "Пройдите регистрацию, для того чтобы начать пользоваться приложением",
+                    fontSize = 15.sp,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -58,52 +60,51 @@ fun IdentityPage(stage : MutableState<Boolean>) : Unit {
                         .fillMaxWidth()
                 )
             }
-
             TextField(
-                value = nickname,
+                value = username,
                 onValueChange = {
-                    nickname = it
+                    username = it
                 },
-                label = { Text(text = "Ваш никнейм") },
+                label = { Text(text = "Придумайте никнейм") },
                 placeholder = { Text(text = "Введите никнейм") }
             )
-
             TextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Ваш пароль") },
+                label = { Text("Придумайте пароль") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ){
-                Button(
-                    onClick = {
-                        stage.value = true
-                    },
-                    modifier = Modifier.fillMaxWidth(fraction = 0.7f)
-                ) {
-                    Text(
-                        text = "Войти",
-                        fontSize = 20.sp
-                    )
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ){
-                Button(
-                    onClick = {
-                        stage.value = true
-                    },
-                    modifier = Modifier.fillMaxWidth(fraction = 0.7f)
-                ) {
-                    Text(
-                        text = "Пройти регистрацию!",
-                        fontSize = 17.sp
-                    )
-                }
+            TextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                },
+                label = { Text(text = "Ваша почта") },
+                placeholder = { Text(text = "Введите почту") }
+            )
+            TextField(
+                value = phone,
+                onValueChange = {
+                    phone = it
+                },
+                label = { Text(text = "Ваш номер телефона") },
+                placeholder = { Text(text = "Введите номер телефона") }
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ){
+            Button(
+                onClick = {
+                    stay.value = true
+                },
+                modifier = Modifier.fillMaxWidth(fraction = 0.7f)
+            ) {
+                Text(
+                    text = "Войти",
+                    fontSize = 20.sp
+                )
             }
         }
     }
