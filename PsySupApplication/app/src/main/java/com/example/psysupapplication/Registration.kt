@@ -1,5 +1,7 @@
 package com.example.psysupapplication
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,9 +34,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
     var password by rememberSaveable { mutableStateOf("") }
-    var username by remember { mutableStateOf(TextFieldValue(""))}
-    var email by remember { mutableStateOf(TextFieldValue(""))}
-    var phone by remember { mutableStateOf(TextFieldValue(""))}
+    var username by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -51,8 +53,8 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
         ) {
             Box(modifier = Modifier.padding(10.dp)) {
                 Text(
-                    text = "Пройдите регистрацию, для того чтобы начать пользоваться приложением",
-                    fontSize = 15.sp,
+                    text = "Пройдите регистрацию, для того чтобы начать пользоваться приложением.",
+                    fontSize = 18.sp,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -67,13 +69,6 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
                 },
                 label = { Text(text = "Придумайте никнейм") },
                 placeholder = { Text(text = "Введите никнейм") }
-            )
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Придумайте пароль") },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
             TextField(
                 value = email,
@@ -91,18 +86,27 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
                 label = { Text(text = "Ваш номер телефона") },
                 placeholder = { Text(text = "Введите номер телефона") }
             )
-        }
-        Row(
-            horizontalArrangement = Arrangement.Center
-        ){
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Придумайте пароль") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
             Button(
                 onClick = {
-                    stay.value = true
+                    /*val text = "Вы ввели не все данные!"
+                    val duration = Toast.LENGTH_SHORT
+
+                    if (username == "" || email == "" || phone == "" || password == "")
+                        Toast.makeText(context, text, duration).show()
+                    else*/
+                        stay.value = true
                 },
                 modifier = Modifier.fillMaxWidth(fraction = 0.7f)
             ) {
                 Text(
-                    text = "Войти",
+                    text = "Зарегистрироваться",
                     fontSize = 20.sp
                 )
             }
