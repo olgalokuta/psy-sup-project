@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.psysupapplication.ui.theme.PurpleGrey80
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun PostsPage() : Unit {
@@ -42,7 +55,7 @@ fun PostsPage() : Unit {
             "Смех избавляет от массы проблем. Чувствуешь, что накрывает, улыбнись, " +
             "расслабься — все пройдет!"
     val post = Post (1, 1,"12.12.23",text)
-
+    val postsList = getPosts()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,98 +63,102 @@ fun PostsPage() : Unit {
     ){
         LazyColumn {
             item {
-                Box(
-                    modifier = Modifier.padding(top = 30.dp)
-                ){
                     Text(
-                        text = "Посты других пользователей",
+                        text = "Посты пользователей",
                         fontSize = 28.sp,
                         textAlign = TextAlign.Left,
                         maxLines = 10,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
-                            .padding(start = 30.dp)
+                            .padding(horizontal = 30.dp, vertical = 20.dp)
                             .fillMaxWidth()
                     )
+            }
+
+            items(10){
+                Box(
+                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MyCustomPost(u, post, Modifier.fillMaxWidth())
                 }
             }
-            item { Spacer(modifier = Modifier.height(10.dp)) }
-            items(10){
-                ViewPost(u, post)
-            }
         }
     }
 }
 
-@Composable
-fun ViewPost(user : User, p : Post) : Unit {
-    Box(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
-        Column {
-            ViewUserInPost(u = user, data = p.date)
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(fraction = 0.9f)
-                    .defaultMinSize(minHeight = 80.dp)
-                    .clip(shape = RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                Text(
-                    text = p.text,
-                    modifier = Modifier.padding(15.dp),
-                    fontSize = 24.sp
-                )
-            }
-        }
-    }
-}
 
 @Composable
-fun ViewUserInPost(u : User, data : String) : Unit {
+fun MyCustomPost(user : User, post : Post, modifier: Modifier) : Unit {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        modifier = Modifier
-            .fillMaxWidth(fraction = 0.9f)
-            .padding(10.dp)
-            .height(70.dp)
-            .clip(shape = RoundedCornerShape(20.dp))
-            .background(Color.White),
-        shape = RoundedCornerShape(15.dp)
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = PurpleGrey80
+        )
     ) {
-        Row {
-            Image(
-                painter = painterResource(id = R.drawable.default_avatar),
-                contentDescription = "Default avatar",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(5.dp)
-                    .clip(RoundedCornerShape(50))
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(fraction = 0.8f)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Column (modifier = Modifier.padding(15.dp)){
+            Row {
+                Image(
+                    painter = painterResource(id = R.drawable.default_avatar),
+                    contentDescription = "Default avatar",
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                )
+
+                Spacer(modifier = Modifier.width(15.dp))
+
                 Column (
                     modifier = Modifier
                         .fillMaxHeight(fraction = 0.8f),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        text = u.username,
-                        fontSize = 24.sp
+                        text = user.username,
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Medium
                     )
-                    Text(text = data, fontSize = 20.sp)
+                    Text(
+                        text = post.date,
+                        color = Color.Black.copy(alpha = 0.7f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            Text(
+                text = post.text,
+                color = Color.Black.copy(alpha = 0.7f),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
+}
+
+fun getPosts () : List<Post> {
+    val interceptor = HttpLoggingInterceptor()
+    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:8080/api/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    var posts : List<Post> = emptyList()
+    val api = retrofit.create(PostAPI::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        posts = api.getAllPosts()
+    }
+    return posts
 }

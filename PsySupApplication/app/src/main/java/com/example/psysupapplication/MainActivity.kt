@@ -140,26 +140,3 @@ fun sendRequest(id : Int) {
         var user = api.getAllUsers()
     }
 }
-
-
-/*
-fun TestRetrofit() : Unit {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://dummyjson.com/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(ProductApi::class.java)
-    CoroutineScope(Dispatchers.IO).launch {
-        var user = api.getProduct(1)
-    }
-}
-*/
