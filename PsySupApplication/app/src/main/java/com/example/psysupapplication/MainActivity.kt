@@ -92,7 +92,8 @@ class MainActivity : ComponentActivity() {
             )
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
-                    false -> IdentityPage(state)
+                    //false -> IdentityPage(state)
+                    false -> RegistrationPage(state)
                     else -> MainPage(u)
                 }
             }
