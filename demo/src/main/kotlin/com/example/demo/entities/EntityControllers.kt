@@ -65,6 +65,10 @@ class PostController(@Autowired private val postRepository: PostRepository) {
     fun getAllUserPosts(@PathVariable("uid") userId: Int): List<Post> =
         postRepository.findByIduser(userId).toList()
 
+    @GetMapping("/public")
+    fun getAllPublicPosts():List<Post> = 
+        postRepository.findByPublic(true).toList()
+
     @PostMapping("")
     fun createPost(@RequestBody post: Post): ResponseEntity<Post> {
         val createdPost = postRepository.save(post)
