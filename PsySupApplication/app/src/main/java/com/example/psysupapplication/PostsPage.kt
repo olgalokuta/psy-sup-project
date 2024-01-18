@@ -42,9 +42,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
-fun PostsPage(u : User) : Unit {
-    val postsList = remember{ mutableStateOf(listOf<Post>()) }
-    getPosts(postsList)
+fun PostsPage(u : User, postsList : MutableState<List<Post>>) : Unit {
+    getAllPosts(postsList)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,8 +68,7 @@ fun PostsPage(u : User) : Unit {
                     modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = post1.content)
-                    MyCustomPost(u, post1, Modifier.fillMaxWidth())
+                    PostInLine(u, post1, Modifier.fillMaxWidth())
                 }
             }
         }
@@ -78,7 +76,7 @@ fun PostsPage(u : User) : Unit {
 }
 
 @Composable
-fun MyCustomPost(user : User, post : Post, modifier: Modifier) : Unit {
+fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -130,7 +128,7 @@ fun MyCustomPost(user : User, post : Post, modifier: Modifier) : Unit {
     }
 }
 
-fun getPosts (posts : MutableState<List<Post>>) {
+fun getAllPosts (posts : MutableState<List<Post>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
