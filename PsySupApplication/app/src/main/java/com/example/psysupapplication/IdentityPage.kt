@@ -120,7 +120,7 @@ fun IdentityPage(stage : MutableState<Boolean>, user : MutableState<User>) : Uni
 fun enterUser (user : MutableState<User>, nickname: String, password: String, state: MutableState<Boolean>) {
 
     val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
+    interceptor.level = HttpLoDDggingInterceptor.Level.BODY
 
     val client = OkHttpClient.Builder()
         .addInterceptor(interceptor)

@@ -44,6 +44,9 @@ interface PostAPI {
         @Path("id") id: Int
     ) : List<Post>
 
+    @GET("posts/public")
+    suspend fun getPublicPosts() : List<Post>
+
     @POST("posts")
     suspend fun createPost(
         @Body noIdPost : PostWithoutId

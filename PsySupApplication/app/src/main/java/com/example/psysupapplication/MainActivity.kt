@@ -77,6 +77,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+<<<<<<< HEAD
             val state = remember {
                 mutableStateOf(false)
             }
@@ -104,6 +105,25 @@ class MainActivity : ComponentActivity() {
 //                    false -> RegistrationPage(state, u)
 //                    else -> IdentityPage(state)
 
+=======
+            val state = remember { mutableStateOf(false) }
+            val u = User(
+                1,
+                "username",
+                "email@gamil.com",
+                "898788888",
+                "1234",
+                1,
+                true,
+                "2003-01-01",
+                emptyList()
+            )
+            Crossfade(targetState = state, label = "") { currentSt ->
+                when (currentSt.value) {
+                    false -> IdentityPage(state)
+                    //false -> RegistrationPage(state)
+                    else -> MainPage(u)
+>>>>>>> 871a109a9fd21af340fe416e1ffa43837ecd0825
                 }
             }
         }
@@ -112,9 +132,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainPage(u : User) : Unit {
-    val state = remember {
-        mutableStateOf("PostsPage")
-    }
+    val state = remember { mutableStateOf("PostsPage") }
+    val userPostsList = remember { mutableStateOf(listOf<Post>()) }
+    val allPublicPostsList = remember { mutableStateOf(listOf<Post>()) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,14 +143,15 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage(u)
+                "PostsPage" -> PostsPage(u, allPublicPostsList)
                 "CreatePostPage" -> CreatePage(u)
-                "ProfilePage" -> PostsPage(u)
+                "ProfilePage" -> ProfilePage(u, userPostsList)
             }
         }
         BottomPanel(state)
     }
 }
+<<<<<<< HEAD
 
 //fun RegistrationPage
 
@@ -154,3 +176,5 @@ fun sendRequest(id : Int) {
         var user = api.getAllUsers()
     }
 }
+=======
+>>>>>>> 871a109a9fd21af340fe416e1ffa43837ecd0825

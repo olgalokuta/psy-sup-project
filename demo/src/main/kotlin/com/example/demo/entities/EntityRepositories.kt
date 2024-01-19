@@ -6,4 +6,5 @@ interface UserRepository : CrudRepository<User, Int>
 
 interface PostRepository : CrudRepository<Post, Int> {
     fun findByIduser(userId : Int) : List <Post>
+    fun findByPublic(public : Boolean) : List <Post>
 }
