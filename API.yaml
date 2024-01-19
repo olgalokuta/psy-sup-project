@@ -51,6 +51,31 @@ paths:
                   $ref: '#/components/schemas/User'
         '500':
           description: Server error
+  /api/users/name/{username}:
+    parameters:
+    - name: username
+      in: path
+      description: Username of the user
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+        - user
+      summary: Get user info
+      description: ''
+      operationId: getUserByUsername
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
   /api/users/{id}:
     parameters:
     - name: id

@@ -19,6 +19,13 @@ class UserController(@Autowired private val userRepository: UserRepository) {
         return ResponseEntity(createdUser, HttpStatus.CREATED)
     }
 
+    @GetMapping("/name/{un}")
+    fun getUserByUsername(@PathVariable("un") username: String): ResponseEntity<User> {
+        val user = userRepository.findByUsername(username).toList()
+        return if (user != null) ResponseEntity(user[0], HttpStatus.OK)
+               else ResponseEntity(HttpStatus.NOT_FOUND)
+    }
+
     @GetMapping("/{id}")
     fun getUserById(@PathVariable("id") userId: Int): ResponseEntity<User> {
         val user = userRepository.findById(userId).orElse(null)
