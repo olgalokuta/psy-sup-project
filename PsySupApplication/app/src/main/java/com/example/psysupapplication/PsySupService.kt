@@ -18,6 +18,11 @@ interface UserAPI {
         @Path("id") id: Int
     ) : User
 
+    @GET("users/name/{nickname}")
+    suspend fun getUserByNick(
+        @Path("nickname") id: String
+    ) : User
+
     @POST("users")
     suspend fun createUser(
         @Body noIdUser : UserWithoutId

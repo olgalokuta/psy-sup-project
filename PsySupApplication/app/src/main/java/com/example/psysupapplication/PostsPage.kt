@@ -42,8 +42,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
-fun PostsPage(u : User, postsList : MutableState<List<Post>>) : Unit {
-    getAllPublicPosts(postsList)
+fun PostsPage(postsList : MutableState<List<Post>>) : Unit {
+    val postAuthors = remember { mutableStateOf(listOf<User>()) }
+    getAllPublicPosts(postsList, postAuthors)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,12 +64,12 @@ fun PostsPage(u : User, postsList : MutableState<List<Post>>) : Unit {
                 )
             }
             
-            items(postsList.value){post1->
+            items(postAuthors.value.zip(postsList.value)){authorAndPost->
                 Box(
                     modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    PostInLine(u, post1, Modifier.fillMaxWidth())
+                    PostInLine(authorAndPost.component1(), authorAndPost.component2(), Modifier.fillMaxWidth())
                 }
             }
         }
@@ -128,7 +129,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
     }
 }
 
-fun getAllPublicPosts (posts : MutableState<List<Post>>) {
+fun getAllPublicPosts (posts : MutableState<List<Post>>, postAuthors : MutableState<List<User>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -142,8 +143,15 @@ fun getAllPublicPosts (posts : MutableState<List<Post>>) {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val api = retrofit.create(PostAPI::class.java)
+    val apiPost = retrofit.create(PostAPI::class.java)
+    val apiUser = retrofit.create(UserAPI::class.java)
+
     CoroutineScope(Dispatchers.IO).launch {
-        posts.value = api.getPublicPosts().reversed()
+        posts.value = apiPost.getPublicPosts().reversed()
+        var listUsers = mutableListOf<User>()
+        for (post in posts.value) {
+            listUsers.add(apiUser.getUserById(post.iduser))
+        }
+        postAuthors.value = listUsers
     }
 }

@@ -72,7 +72,7 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage(u, allPublicPostsList)
+                "PostsPage" -> PostsPage(allPublicPostsList)
                 "CreatePostPage" -> CreatePage(u)
                 "ProfilePage" -> ProfilePage(u, userPostsList)
             }
