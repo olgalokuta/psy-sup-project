@@ -105,14 +105,17 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
             Button(
                 onClick = {
                     val user1 = UserWithoutId(username, email, phone, password, gender = false, birthday = "2024-01-17", pfp =1, topics = emptyList())
-                    createUser(user1)
                     val text = "Вы ввели не все данные!"
                     val duration = Toast.LENGTH_SHORT
 
                     if (username == "" || email == "" || phone == "" || password == "")
                         Toast.makeText(context, text, duration).show()
-                    else
-                        stay.value = true
+
+                    else{
+                        createUser(user1)
+                        stay.value = false
+                    }
+
                 },
                 modifier = Modifier.fillMaxWidth(fraction = 0.7f)
             ) {
@@ -124,6 +127,7 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
         }
     }
 }
+
 
 
 fun createUser (user1 : UserWithoutId) {
