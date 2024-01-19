@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.psysupapplication.ui.theme.Purple80
@@ -67,30 +68,44 @@ data class ProfileInfo(
 )
 
 @Composable
-fun ProfilePage(user : User, postsList : MutableState<List<Post>>) : Unit {
-    getUsersPosts(user.id, postsList)
+fun ProfilePage(user : User, userPostsList : MutableState<List<Post>>) : Unit {
+    getUsersPosts(user.id, userPostsList)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.92f)
-            .padding(top = 40.dp, start = 15.dp, end = 15.dp)
+            .padding(horizontal = 15.dp)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+            item{
+                Text(
+                    text = "Ваш профиль",
+                    fontSize = 28.sp,
+                    textAlign = TextAlign.Left,
+                    maxLines = 10,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(30.dp)
+                        .fillMaxWidth()
+                )
+            }
             item { ProfileInfoCard(user = user) }
             item {
                 Text(
                     text = "Ваши посты",
-                    modifier = Modifier.padding(top = 20.dp, bottom = 5.dp),
-                    color = Color.Black.copy(alpha = 0.8f),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Medium
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(horizontal = 30.dp, vertical = 20.dp)
+                        .fillMaxWidth()
                 )
             }
-            items(postsList.value){post1->
+            items(userPostsList.value){post1->
                 Box(
                     modifier = Modifier.padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
@@ -188,14 +203,14 @@ fun ProfileInfoCard(user : User) {
                 painter = painterResource(id = R.drawable.default_avatar),
                 contentDescription = "Default avatar",
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(70.dp)
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(15.dp))
             Text(
                 text = user.username,
                 color = Color.Black,
-                fontSize = 28.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -236,7 +251,7 @@ fun ProfileInfoCard(user : User) {
     }
 }
 
-fun getUsersPosts (userId : Int, posts : MutableState<List<Post>>) {
+fun getUsersPosts (userId : Int, userPostsList : MutableState<List<Post>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -252,6 +267,6 @@ fun getUsersPosts (userId : Int, posts : MutableState<List<Post>>) {
 
     val api = retrofit.create(PostAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        posts.value = api.getUserPosts(userId)
+        userPostsList.value = api.getUserPosts(userId).reversed()
     }
 }

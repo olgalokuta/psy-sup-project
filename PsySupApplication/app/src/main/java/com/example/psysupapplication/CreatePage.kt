@@ -4,17 +4,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +46,7 @@ import java.util.Date
 fun CreatePage(u : User) : Unit {
     var text by remember { mutableStateOf("") }
     var dialogOpen by remember { mutableStateOf(false) }
+    val isPublic = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -52,52 +58,45 @@ fun CreatePage(u : User) : Unit {
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier.padding(20.dp)
-            ){
-                Text(
-                    text = "Напишите пост",
-                    fontSize = 28.sp,
-                    textAlign = TextAlign.Left,
-                    maxLines = 10,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(start = 30.dp)
-                        .fillMaxWidth()
-                )
-            }
+            Text(
+                text = "Напишите пост",
+                fontSize = 28.sp,
+                textAlign = TextAlign.Left,
+                maxLines = 10,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(horizontal = 30.dp, vertical = 20.dp)
+                    .fillMaxWidth()
+            )
             TextField(
                 value = text, onValueChange = { text = it },
                 label = { Text(text = "Твой пост", fontSize = 24.sp) },
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.8f),
+                    .fillMaxHeight(0.7f),
             )
             Column (
                 modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Button(
-                        onClick = {
-                                if (text != "") {
-                                    createPost(u.id, text)
-                                    dialogOpen = true
-                                    text = ""
-                                }
-                            },
-                        modifier = Modifier
-                            .fillMaxWidth(fraction = 0.7f)
-                            .fillMaxHeight(0.4f)
-                    ) {
-                        Text(
-                            text = "Создать пост",
-                            fontSize = 20.sp
-                        )
-                    }
+                RadioButtons(isPublic = isPublic)
+                Button(
+                    onClick = {
+                        if (text != "") {
+                            createPost(u.id, isPublic.value, text)
+                            dialogOpen = true
+                            text = ""
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(fraction = 0.7f)
+                        .fillMaxHeight(0.4f)
+                ) {
+                    Text(
+                        text = "Создать пост",
+                        fontSize = 20.sp
+                    )
                 }
             }
         }
@@ -120,7 +119,30 @@ fun CreatePage(u : User) : Unit {
     }
 }
 
-fun createPost (userId : Int, text : String) : Unit {
+@Composable
+fun RadioButtons(isPublic : MutableState<Boolean>) {
+    Box (contentAlignment = Alignment.CenterStart){
+        Row (Modifier.selectableGroup(), verticalAlignment = Alignment.CenterVertically)
+        {
+            RadioButton(
+                selected = !isPublic.value,
+                onClick = { isPublic.value = false },
+                modifier = Modifier.padding(8.dp)
+            )
+            Text("Приватный", fontSize = 20.sp)
+
+            Spacer(modifier = Modifier.width(10.dp))
+            RadioButton(
+                selected = isPublic.value,
+                onClick = { isPublic.value = true },
+                modifier = Modifier.padding(8.dp)
+            )
+            Text("Публичный", fontSize = 20.sp)
+        }
+    }
+}
+
+fun createPost (userId : Int, isPublic: Boolean, text : String) : Unit {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
     val currentDate = sdf.format(Date())
     val postNoId = PostWithoutId(
@@ -128,7 +150,7 @@ fun createPost (userId : Int, text : String) : Unit {
         posted = currentDate,
         content = text,
         moderated = false,
-        public = true,
+        public = isPublic,
         topics = emptyList()
     )
 

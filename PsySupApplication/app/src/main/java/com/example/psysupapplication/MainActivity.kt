@@ -78,7 +78,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val state = remember { mutableStateOf(false) }
-
             val u = User(
                 1,
                 "username",
@@ -92,8 +91,8 @@ class MainActivity : ComponentActivity() {
             )
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
-                    //false -> IdentityPage(state)
-                    false -> RegistrationPage(state)
+                    false -> IdentityPage(state)
+                    //false -> RegistrationPage(state)
                     else -> MainPage(u)
                 }
             }
@@ -104,8 +103,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainPage(u : User) : Unit {
     val state = remember { mutableStateOf("PostsPage") }
-    val userPostsList = remember{ mutableStateOf(listOf<Post>()) }
-    val allPostsList = remember{ mutableStateOf(listOf<Post>()) }
+    val userPostsList = remember { mutableStateOf(listOf<Post>()) }
+    val allPublicPostsList = remember { mutableStateOf(listOf<Post>()) }
 
     Column(
         modifier = Modifier
@@ -114,7 +113,7 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage(u, allPostsList)
+                "PostsPage" -> PostsPage(u, allPublicPostsList)
                 "CreatePostPage" -> CreatePage(u)
                 "ProfilePage" -> ProfilePage(u, userPostsList)
             }

@@ -43,7 +43,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun PostsPage(u : User, postsList : MutableState<List<Post>>) : Unit {
-    getAllPosts(postsList)
+    getAllPublicPosts(postsList)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +128,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
     }
 }
 
-fun getAllPosts (posts : MutableState<List<Post>>) {
+fun getAllPublicPosts (posts : MutableState<List<Post>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -144,6 +144,6 @@ fun getAllPosts (posts : MutableState<List<Post>>) {
 
     val api = retrofit.create(PostAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        posts.value = api.getAllPosts()
+        posts.value = api.getPublicPosts().reversed()
     }
 }
