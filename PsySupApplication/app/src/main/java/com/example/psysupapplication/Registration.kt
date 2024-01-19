@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -30,6 +31,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
@@ -37,7 +46,7 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
     var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
-
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,12 +104,14 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
             )
             Button(
                 onClick = {
-                    /*val text = "Вы ввели не все данные!"
+                    val user1 = UserWithoutId(username, email, phone, password, gender = false, birthday = "2024-01-17", pfp =1, topics = emptyList())
+                    createUser(user1)
+                    val text = "Вы ввели не все данные!"
                     val duration = Toast.LENGTH_SHORT
 
                     if (username == "" || email == "" || phone == "" || password == "")
                         Toast.makeText(context, text, duration).show()
-                    else*/
+                    else
                         stay.value = true
                 },
                 modifier = Modifier.fillMaxWidth(fraction = 0.7f)
@@ -111,5 +122,28 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
                 )
             }
         }
+    }
+}
+
+
+fun createUser (user1 : UserWithoutId) {
+
+    var user : User
+    val interceptor = HttpLoggingInterceptor()
+    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:8080/api/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val api = retrofit.create(UserAPI::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        user = api.createUser(user1)
     }
 }

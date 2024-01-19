@@ -81,22 +81,29 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
 
-            val u = User(
-                1,
-                "username",
-                "email@gamil.com",
-                "898788888",
-                "1234",
-                1,
-                true,
-                "2003-01-01",
-                emptyList()
-            )
+            val u = remember{
+                mutableStateOf(User(
+                    1,
+                    "username",
+                    "email@gamil.com",
+                    "898788888",
+                    "1234",
+                    1,
+                    true,
+                    "2003-01-01",
+                    emptyList()
+                ))
+            }
+
+
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
-                    //false -> IdentityPage(state)
+                    //false -> IdentityPage(state, u)
                     false -> RegistrationPage(state)
-                    else -> MainPage(u)
+                    else -> MainPage(u.value)
+//                    false -> RegistrationPage(state, u)
+//                    else -> IdentityPage(state)
+
                 }
             }
         }
@@ -123,6 +130,8 @@ fun MainPage(u : User) : Unit {
         BottomPanel(state)
     }
 }
+
+//fun RegistrationPage
 
 fun sendRequest(id : Int) {
     var user : List<User>
