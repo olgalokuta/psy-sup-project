@@ -18,7 +18,7 @@ interface UserAPI {
         @Path("id") id: Int
     ) : User
 
-    @PUT("users")
+    @POST("users")
     suspend fun createUser(
         @Body noIdUser : UserWithoutId
     ) : User

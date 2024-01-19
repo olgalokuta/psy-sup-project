@@ -28,12 +28,19 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IdentityPage(stage : MutableState<Boolean>) : Unit {
+fun IdentityPage(stage : MutableState<Boolean>, user : MutableState<User>) : Unit {
     var password by rememberSaveable { mutableStateOf("") }
-    var nickname by remember { mutableStateOf(TextFieldValue("")) }
+    var nickname by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +87,8 @@ fun IdentityPage(stage : MutableState<Boolean>) : Unit {
             ){
                 Button(
                     onClick = {
-                        stage.value = true
+                        enterUser(user, nickname, password, stage)
+
                     },
                     modifier = Modifier.fillMaxWidth(fraction = 0.7f)
                 ) {
@@ -106,5 +114,28 @@ fun IdentityPage(stage : MutableState<Boolean>) : Unit {
                 }
             }
         }
+    }
+}
+
+fun enterUser (user : MutableState<User>, nickname: String, password: String, state: MutableState<Boolean>) {
+
+    val interceptor = HttpLoggingInterceptor()
+    interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:8080/api/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val api = retrofit.create(UserAPI::class.java)
+    CoroutineScope(Dispatchers.IO).launch {
+        user.value = api.getUserById(nickname.toInt())//getUserByNickname и убрать TоINT
+        if (user.value.password == password)
+            state.value = true
     }
 }
