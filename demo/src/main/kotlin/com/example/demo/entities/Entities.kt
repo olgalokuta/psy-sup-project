@@ -73,7 +73,7 @@ data class UserStatus(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
     val iduser: Int,
-    val idstatus Int,
+    val idstatus: Int,
     val timebeg: LocalDateTime,
     val timeend: LocalDateTime
 )
