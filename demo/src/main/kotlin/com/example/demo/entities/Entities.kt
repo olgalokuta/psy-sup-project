@@ -33,3 +33,18 @@ data class Post(
     val public: Boolean,
     val topics: List<Int>
 )
+
+@Entity
+@Table(name = "comments")
+data class Comment(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Int,
+    val iduser: Int,
+    val posted: LocalDateTime,
+    val content: String, 
+    val moderated: Boolean, 
+    val idpost: Int,
+    val idanscomment: Int
+)
+
