@@ -200,7 +200,7 @@ fun ProfileInfoCard(user : User) {
             verticalAlignment = Alignment.CenterVertically
         ){
             Image(
-                painter = painterResource(id = R.drawable.default_avatar),
+                painter = painterResource(id = R.drawable.fox),
                 contentDescription = "Default avatar",
                 modifier = Modifier
                     .size(70.dp)

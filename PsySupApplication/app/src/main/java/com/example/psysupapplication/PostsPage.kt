@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,10 +42,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+data class PostAndAuthorLists(
+    val post: List<Post>,
+    val author: List<User>
+)
+
 @Composable
-fun PostsPage(postsList : MutableState<List<Post>>) : Unit {
-    val postAuthors = remember { mutableStateOf(listOf<User>()) }
-    getAllPublicPosts(postsList, postAuthors)
+fun PostsPage(postsAndAuthors : MutableState<PostAndAuthorLists>) : Unit {
+    getAllPublicPosts(postsAndAuthors)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,7 +69,7 @@ fun PostsPage(postsList : MutableState<List<Post>>) : Unit {
                 )
             }
             
-            items(postAuthors.value.zip(postsList.value)){authorAndPost->
+            items(postsAndAuthors.value.author.zip(postsAndAuthors.value.post)){authorAndPost->
                 Box(
                     modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
@@ -129,7 +134,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
     }
 }
 
-fun getAllPublicPosts (posts : MutableState<List<Post>>, postAuthors : MutableState<List<User>>) {
+fun getAllPublicPosts (postsAndAuthors : MutableState<PostAndAuthorLists>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -147,11 +152,11 @@ fun getAllPublicPosts (posts : MutableState<List<Post>>, postAuthors : MutableSt
     val apiUser = retrofit.create(UserAPI::class.java)
 
     CoroutineScope(Dispatchers.IO).launch {
-        posts.value = apiPost.getPublicPosts().reversed()
+        var listPosts = apiPost.getPublicPosts().reversed()
         var listUsers = mutableListOf<User>()
-        for (post in posts.value) {
+        for (post in listPosts) {
             listUsers.add(apiUser.getUserById(post.iduser))
         }
-        postAuthors.value = listUsers
+        postsAndAuthors.value = PostAndAuthorLists(listPosts, listUsers)
     }
 }

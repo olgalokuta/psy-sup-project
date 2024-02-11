@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
                 ))
             }
 
-
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
                     false -> Enter(state, u)
@@ -63,7 +62,7 @@ class MainActivity : ComponentActivity() {
 fun MainPage(u : User) : Unit {
     val state = remember { mutableStateOf("PostsPage") }
     val userPostsList = remember { mutableStateOf(listOf<Post>()) }
-    val allPublicPostsList = remember { mutableStateOf(listOf<Post>()) }
+    val postsAndAuthors = remember { mutableStateOf(PostAndAuthorLists(listOf<Post>(), listOf<User>())) }
 
     Column(
         modifier = Modifier
@@ -72,34 +71,11 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage(allPublicPostsList)
+                "PostsPage" -> PostsPage(postsAndAuthors)
                 "CreatePostPage" -> CreatePage(u)
                 "ProfilePage" -> ProfilePage(u, userPostsList)
             }
         }
         BottomPanel(state)
-    }
-}
-
-
-fun sendRequest(id : Int) {
-    var user : List<User>
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    //http://127.0.0.1:8080/api/users/
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(UserAPI::class.java)
-    CoroutineScope(Dispatchers.IO).launch {
-        var user = api.getAllUsers()
     }
 }

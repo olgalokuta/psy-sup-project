@@ -79,9 +79,7 @@ fun EnterPage(stage : MutableState<Boolean>, regist : MutableState<Boolean>, use
 
             TextField(
                 value = nickname,
-                onValueChange = {
-                    nickname = it
-                },
+                onValueChange = { nickname = it },
                 label = { Text(text = "Ваш никнейм") },
                 placeholder = { Text(text = "Введите никнейм") }
             )
@@ -93,13 +91,13 @@ fun EnterPage(stage : MutableState<Boolean>, regist : MutableState<Boolean>, use
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
+
             Row(
                 horizontalArrangement = Arrangement.Center
             ){
                 Button(
                     onClick = {
                         enterUser(user, nickname, password, stage)
-
                     },
                     modifier = Modifier.fillMaxWidth(fraction = 0.7f)
                 ) {
@@ -130,7 +128,6 @@ fun EnterPage(stage : MutableState<Boolean>, regist : MutableState<Boolean>, use
 
 
 fun enterUser (user : MutableState<User>, nickname: String, password: String, state: MutableState<Boolean>) {
-
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -146,7 +143,7 @@ fun enterUser (user : MutableState<User>, nickname: String, password: String, st
 
     val api = retrofit.create(UserAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        user.value = api.getUserById(nickname.toInt())//getUserByNickname и убрать TоINT
+        user.value = api.getUserByNick(nickname)
         if (user.value.password == password)
             state.value = true
     }
