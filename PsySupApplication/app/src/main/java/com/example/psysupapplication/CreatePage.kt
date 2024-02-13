@@ -43,6 +43,12 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun FieldsForEntries(f : (Int, Boolean, String) -> Unit) : Unit {
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun CreatePage(u : User) : Unit {
     var text by remember { mutableStateOf("") }
     var dialogOpen by remember { mutableStateOf(false) }

@@ -126,21 +126,18 @@ fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
             containerColor = PurpleGrey80
         )
     ) {
-        Column (modifier = Modifier.padding(15.dp)){
+        Column (modifier = Modifier.padding(top = 10.dp, bottom = 5.dp, end = 15.dp, start = 15.dp)){
             Row {
                 Image(
                     painter = painterResource(id = R.drawable.default_avatar),
                     contentDescription = "Default avatar",
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
+                    modifier = Modifier.size(42.dp).clip(CircleShape)
                 )
 
                 Spacer(modifier = Modifier.width(15.dp))
 
                 Column (
-                    modifier = Modifier
-                        .fillMaxHeight(fraction = 0.8f),
+                    modifier = Modifier.fillMaxHeight(fraction = 0.8f),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
@@ -174,6 +171,14 @@ fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ){
+                IconButton(onClick = { }) {
+                    Icon(MyIcons.edit, contentDescription = "Редактирование")
+                }
+            }
         }
     }
 }
