@@ -11,7 +11,7 @@ data class UserWithoutId(
     var topics: List<Int>
 )
 
-data class PostWithoutId(
+data class EntryWithoutId(
     val iduser: Int,
     val posted: String,
     val content: String,

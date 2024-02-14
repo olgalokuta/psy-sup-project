@@ -21,13 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,14 +39,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-data class PostAndAuthorLists(
-    val post: List<Post>,
+data class EntryAndAuthorLists(
+    val entry: List<Entry>,
     val author: List<User>
 )
 
 @Composable
-fun PostsPage(postsAndAuthors : MutableState<PostAndAuthorLists>) : Unit {
-    getAllPublicPosts(postsAndAuthors)
+fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>) : Unit {
+    getAllPublicEntries(entrysAndAuthors)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,12 +66,12 @@ fun PostsPage(postsAndAuthors : MutableState<PostAndAuthorLists>) : Unit {
                 )
             }
             
-            items(postsAndAuthors.value.author.zip(postsAndAuthors.value.post)){authorAndPost->
+            items(entrysAndAuthors.value.author.zip(entrysAndAuthors.value.entry)){ authorAndEntry->
                 Box(
                     modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    PostInLine(authorAndPost.component1(), authorAndPost.component2(), Modifier.fillMaxWidth())
+                    EntryInLine(authorAndEntry.component1(), authorAndEntry.component2(), Modifier.fillMaxWidth())
                 }
             }
         }
@@ -82,7 +79,7 @@ fun PostsPage(postsAndAuthors : MutableState<PostAndAuthorLists>) : Unit {
 }
 
 @Composable
-fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
+fun EntryInLine(user : User, entry : Entry, modifier: Modifier) : Unit {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -114,7 +111,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = post.posted,
+                        text = entry.posted,
                         color = Color.Black.copy(alpha = 0.7f),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
@@ -125,7 +122,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
             Spacer(modifier = Modifier.height(20.dp))
             
             Text(
-                text = post.content,
+                text = entry.content,
                 color = Color.Black.copy(alpha = 0.7f),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
@@ -134,7 +131,7 @@ fun PostInLine(user : User, post : Post, modifier: Modifier) : Unit {
     }
 }
 
-fun getAllPublicPosts (postsAndAuthors : MutableState<PostAndAuthorLists>) {
+fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -148,15 +145,15 @@ fun getAllPublicPosts (postsAndAuthors : MutableState<PostAndAuthorLists>) {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val apiPost = retrofit.create(PostAPI::class.java)
+    val apiEntry = retrofit.create(EntryAPI::class.java)
     val apiUser = retrofit.create(UserAPI::class.java)
 
     CoroutineScope(Dispatchers.IO).launch {
-        var listPosts = apiPost.getPublicPosts().reversed()
+        var listEntries = apiEntry.getPublicEntries().reversed()
         var listUsers = mutableListOf<User>()
-        for (post in listPosts) {
-            listUsers.add(apiUser.getUserById(post.iduser))
+        for (entry in listEntries) {
+            listUsers.add(apiUser.getUserById(entry.iduser))
         }
-        postsAndAuthors.value = PostAndAuthorLists(listPosts, listUsers)
+        entriesAndAuthors.value = EntryAndAuthorLists(listEntries, listUsers)
     }
 }

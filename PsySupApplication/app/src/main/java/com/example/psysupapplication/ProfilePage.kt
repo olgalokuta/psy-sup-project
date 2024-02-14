@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,8 +69,21 @@ data class ProfileInfo(
 )
 
 @Composable
-fun ProfilePage(user : User, userPostsList : MutableState<List<Post>>) : Unit {
-    getUsersPosts(user.id, userPostsList)
+fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit {
+    val isEditing = remember { mutableStateOf(false) }
+    val entryForEdit = remember { mutableStateOf<Entry?>(null) }
+    Crossfade(targetState = isEditing, label = "") { currentSt ->
+        when (currentSt.value) {
+            false -> Profile(user, userEntriesList, isEditing, entryForEdit)
+            true -> entryForEdit.value?.let { EditPage(it, currentSt) }
+        }
+    }
+}
+
+@Composable
+fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing : MutableState<Boolean>,
+            entryForEdit : MutableState<Entry?>) {
+    getUsersEntries(user.id, userEntriesList)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,12 +119,12 @@ fun ProfilePage(user : User, userPostsList : MutableState<List<Post>>) : Unit {
                         .fillMaxWidth()
                 )
             }
-            items(userPostsList.value){post1->
+            items(userEntriesList.value){entry1->
                 Box(
                     modifier = Modifier.padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    PostInProfile(user, post1, Modifier.fillMaxWidth())
+                    EntryInProfile(user, entry1, Modifier.fillMaxWidth(), isEditing, entryForEdit)
                 }
             }
         }
@@ -118,7 +132,8 @@ fun ProfilePage(user : User, userPostsList : MutableState<List<Post>>) : Unit {
 }
 
 @Composable
-fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
+fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : MutableState<Boolean>,
+                  entryForEdit : MutableState<Entry?>) : Unit {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -126,7 +141,7 @@ fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
             containerColor = PurpleGrey80
         )
     ) {
-        Column (modifier = Modifier.padding(top = 10.dp, bottom = 5.dp, end = 15.dp, start = 15.dp)){
+        Column (modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp)){
             Row {
                 Image(
                     painter = painterResource(id = R.drawable.default_avatar),
@@ -147,13 +162,13 @@ fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = post.posted,
+                        text = entry.posted,
                         color = Color.Black.copy(alpha = 0.7f),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
                     val text : String
-                    if (post.public) text = "Публичный" else text = "Приватный"
+                    if (entry.public) text = "Публичный" else text = "Приватный"
                     Text(
                         text = text,
                         color = Color.Black.copy(alpha = 0.7f),
@@ -161,24 +176,27 @@ fun PostInProfile(user : User, post : Post, modifier: Modifier) : Unit {
                         fontWeight = FontWeight.Medium
                     )
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ){
+                    IconButton(onClick = {
+                        entryForEdit.value = entry
+                        isEditing.value = true
+                    }) {
+                        Icon(MyIcons.edit, contentDescription = "Редактирование")
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = post.content,
+                text = entry.content,
                 color = Color.Black.copy(alpha = 0.7f),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ){
-                IconButton(onClick = { }) {
-                    Icon(MyIcons.edit, contentDescription = "Редактирование")
-                }
-            }
         }
     }
 }
@@ -207,9 +225,7 @@ fun ProfileInfoCard(user : User) {
             Image(
                 painter = painterResource(id = R.drawable.fox),
                 contentDescription = "Default avatar",
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(CircleShape)
+                modifier = Modifier.size(70.dp).clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(15.dp))
             Text(
@@ -256,7 +272,7 @@ fun ProfileInfoCard(user : User) {
     }
 }
 
-fun getUsersPosts (userId : Int, userPostsList : MutableState<List<Post>>) {
+fun getUsersEntries (userId : Int, userEntriesList : MutableState<List<Entry>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -270,8 +286,8 @@ fun getUsersPosts (userId : Int, userPostsList : MutableState<List<Post>>) {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val api = retrofit.create(PostAPI::class.java)
+    val api = retrofit.create(EntryAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        userPostsList.value = api.getUserPosts(userId).reversed()
+        userEntriesList.value = api.getUserEntries(userId).reversed()
     }
 }

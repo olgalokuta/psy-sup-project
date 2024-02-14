@@ -12,12 +12,12 @@ data class User (
     var topics: List<Int>
 )
 
-data class Post(
-    val id: Int,
-    val iduser: Int,
-    val posted: String,
-    val content: String,
-    val moderated: Boolean,
-    val public: Boolean,
-    val topics: List<Int>
+data class Entry(
+    var id: Int,
+    var iduser: Int,
+    var posted: String,
+    var content: String,
+    var moderated: Boolean,
+    var public: Boolean,
+    var topics: List<Int>
 )

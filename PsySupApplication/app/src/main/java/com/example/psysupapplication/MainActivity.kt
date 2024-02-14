@@ -13,13 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -60,9 +53,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainPage(u : User) : Unit {
-    val state = remember { mutableStateOf("PostsPage") }
-    val userPostsList = remember { mutableStateOf(listOf<Post>()) }
-    val postsAndAuthors = remember { mutableStateOf(PostAndAuthorLists(listOf<Post>(), listOf<User>())) }
+    val state = remember { mutableStateOf("EntriesPage") }
+    val userPostsList = remember { mutableStateOf(listOf<Entry>()) }
+    val entriesAndAuthors = remember { mutableStateOf(EntryAndAuthorLists(listOf<Entry>(), listOf<User>())) }
 
     Column(
         modifier = Modifier
@@ -71,8 +64,8 @@ fun MainPage(u : User) : Unit {
     ){
         Crossfade(targetState = state, label = "") { currentSt ->
             when (currentSt.value) {
-                "PostsPage" -> PostsPage(postsAndAuthors)
-                "CreatePostPage" -> CreatePage(u)
+                "EntriesPage" -> EntriesPage(entriesAndAuthors)
+                "CreateEntryPage" -> CreatePage(u)
                 "ProfilePage" -> ProfilePage(u, userPostsList)
             }
         }

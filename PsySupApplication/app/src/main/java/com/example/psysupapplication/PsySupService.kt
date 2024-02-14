@@ -38,20 +38,26 @@ interface UserAPI {
     ) //: Response<ResponseBody>
 }
 
-interface PostAPI {
+interface EntryAPI {
     @GET("posts")
-    suspend fun getAllPosts() : List<Post>
+    suspend fun getAllEntries() : List<Entry>
 
     @GET("posts/user/{id}")
-    suspend fun getUserPosts(
+    suspend fun getUserEntries(
         @Path("id") id: Int
-    ) : List<Post>
+    ) : List<Entry>
 
     @GET("posts/public")
-    suspend fun getPublicPosts() : List<Post>
+    suspend fun getPublicEntries() : List<Entry>
 
     @POST("posts")
-    suspend fun createPost(
-        @Body noIdPost : PostWithoutId
-    ) : Post
+    suspend fun createEntry(
+        @Body noIdEntry : EntryWithoutId
+    ) : Entry
+
+    @PUT("posts/{id}")
+    suspend fun updateEntry(
+        @Path("id") id: Int,
+        @Body entry : Entry
+    ) : Entry
 }
