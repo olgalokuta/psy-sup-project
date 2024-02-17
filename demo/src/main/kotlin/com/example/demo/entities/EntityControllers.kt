@@ -61,56 +61,56 @@ class UserController(@Autowired private val userRepository: UserRepository) {
 }
 
 @RestController
-@RequestMapping("/api/posts")
-class PostController(@Autowired private val postRepository: PostRepository) {
+@RequestMapping("/api/entries")
+class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
     @GetMapping("")
-    fun getAllPosts(): List<Post> =
-        postRepository.findAll().toList()
+    fun getAllEntries(): List<Entry> =
+        entryRepository.findAll().toList()
 
     @GetMapping("/user/{uid}")
-    fun getAllUserPosts(@PathVariable("uid") userId: Int): List<Post> =
-        postRepository.findByIduser(userId).toList()
+    fun getAllUserEntries(@PathVariable("uid") userId: Int): List<Entry> =
+        entryRepository.findByIduser(userId).toList()
 
     @GetMapping("/public")
-    fun getAllPublicPosts():List<Post> = 
-        postRepository.findByPublic(true).toList()
+    fun getAllPublicEntries():List<Entry> = 
+        entryRepository.findByPublic(true).toList()
 
     @PostMapping("")
-    fun createPost(@RequestBody post: Post): ResponseEntity<Post> {
-        val createdPost = postRepository.save(post)
-        return ResponseEntity(createdPost, HttpStatus.CREATED)
+    fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
+        val createdEntry = entryRepository.save(entry)
+        return ResponseEntity(createdEntry, HttpStatus.CREATED)
     }
 
     @GetMapping("/{id}")
-    fun getPostById(@PathVariable("id") postId: Int): ResponseEntity<Post> {
-        val post = postRepository.findById(postId).orElse(null)
-        return if (post != null) ResponseEntity(post, HttpStatus.OK)
+    fun getEntryById(@PathVariable("id") entryId: Int): ResponseEntity<Entry> {
+        val entry = entryRepository.findById(entryId).orElse(null)
+        return if (entry != null) ResponseEntity(entry, HttpStatus.OK)
                else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
     @PutMapping("/{id}")
-    fun updatePostById(@PathVariable("id") postId: Int, @RequestBody post: Post): ResponseEntity<Post> {
+    fun updateEntryById(@PathVariable("id") entryId: Int, @RequestBody entry: Entry): ResponseEntity<Entry> {
 
-        val existingPost = postRepository.findById(postId).orElse(null)
+        val existingEntry = entryRepository.findById(entryId).orElse(null)
 
-        if (existingPost == null) {
+        if (existingEntry == null) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
-        val updatedPost = existingPost.copy(iduser = post.iduser, posted = post.posted, 
-            content = post.content, moderated = post.moderated, public = post.public, 
-            topics = post.topics)
-        postRepository.save(updatedPost)
-        return ResponseEntity(updatedPost, HttpStatus.OK)
+        val updatedEntry = existingEntry.copy(iduser = entry.iduser, posted = entry.posted, 
+            content = entry.content, moderated = entry.moderated, public = entry.public, 
+            topics = entry.topics)
+        entryRepository.save(updatedEntry)
+        return ResponseEntity(updatedEntry, HttpStatus.OK)
     }
 
     @DeleteMapping("/{id}")
-    fun deletePostById(@PathVariable("id") postId: Int): ResponseEntity<Post> {
-        if (!postRepository.existsById(postId)) {
+    fun deleteEntryById(@PathVariable("id") entryId: Int): ResponseEntity<Entry> {
+        if (!entryRepository.existsById(entryId)) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
-        postRepository.deleteById(postId)
+        entryRepository.deleteById(entryId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
