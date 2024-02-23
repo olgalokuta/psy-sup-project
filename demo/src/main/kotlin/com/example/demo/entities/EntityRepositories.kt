@@ -10,3 +10,7 @@ interface EntryRepository : CrudRepository<Entry, Int> {
     fun findByIduser(userId : Int) : List <Entry>
     fun findByPublic(public : Boolean) : List <Entry>
 }
+
+interface CommentRepository : CrudRepository<Comment, Int> {
+    fun findByIdentry(entryId : Int) : List <Comment>
+}
