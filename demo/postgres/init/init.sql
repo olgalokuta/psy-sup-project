@@ -22,10 +22,10 @@ create table Status (
 ----------------------------------------------------------------------------
 create table UserStatus (
 	id SERIAL PRIMARY KEY,
-	id_user integer REFERENCES "User",
-	id_status integer REFERENCES Status,
-	time_beg  timestamp,
-	time_end  timestamp
+	iduser integer REFERENCES "User",
+	idstatus integer REFERENCES Status,
+	timebeg  timestamp,
+	timeend  timestamp
 )
 ----------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ create table Topic (
 ----------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------
-create table Post (
+create table Entry (
 	id SERIAL PRIMARY KEY,
 	iduser integer REFERENCES "User", -- id автора поста
 	posted datetime,                       -- опубликован?
@@ -51,9 +51,9 @@ create table Post (
 ----------------------------------------------------------------------------
 create table "Comment" (
 	id SERIAL PRIMARY KEY,
-	id_post integer REFERENCES Post,   -- к какому посту относится
-	id_user integer REFERENCES "User", -- id автора
-	id_answer_comment integer,         -- id комментария, на который отвечают, если такой есть
+	identry integer REFERENCES Entry,   -- к какому посту относится
+	iduser integer REFERENCES "User", -- id автора
+	idanscomment integer,         -- id комментария, на который отвечают, если такой есть
 	posted datetime,                       -- опубликован?
 	сontent text,                      -- текст комментария
 	moderated bool                     -- отмодерирован?

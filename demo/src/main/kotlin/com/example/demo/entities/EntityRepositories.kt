@@ -6,7 +6,11 @@ interface UserRepository : CrudRepository<User, Int> {
     fun findByUsername(uname : String) : List<User>
 }
 
-interface PostRepository : CrudRepository<Post, Int> {
-    fun findByIduser(userId : Int) : List <Post>
-    fun findByPublic(public : Boolean) : List <Post>
+interface EntryRepository : CrudRepository<Entry, Int> {
+    fun findByIduser(userId : Int) : List <Entry>
+    fun findByPublic(public : Boolean) : List <Entry>
+}
+
+interface CommentRepository : CrudRepository<Comment, Int> {
+    fun findByIdentry(entryId : Int) : List <Comment>
 }

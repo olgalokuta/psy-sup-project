@@ -21,8 +21,8 @@ data class User(
 )
 
 @Entity
-@Table(name = "posts")
-data class Post(
+@Table(name = "entries")
+data class Entry(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
@@ -44,7 +44,7 @@ data class Comment(
     val posted: LocalDateTime,
     val content: String, 
     val moderated: Boolean, 
-    val idpost: Int,
+    val identry: Int,
     val idanscomment: Int
 )
 
