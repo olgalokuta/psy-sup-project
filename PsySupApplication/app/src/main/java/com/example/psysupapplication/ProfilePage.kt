@@ -71,18 +71,24 @@ data class ProfileInfo(
 @Composable
 fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit {
     val isEditing = remember { mutableStateOf(false) }
-    val entryForEdit = remember { mutableStateOf<Entry?>(null) }
+    val isCommenting = remember { mutableStateOf(false) }
+    val currentEntry = remember { mutableStateOf<Entry?>(null) }
     Crossfade(targetState = isEditing, label = "") { currentSt ->
         when (currentSt.value) {
-            false -> Profile(user, userEntriesList, isEditing, entryForEdit)
-            true -> entryForEdit.value?.let { EditPage(it, currentSt) }
+            false -> {
+                if (!isCommenting.value)
+                    Profile(user, userEntriesList, isEditing, isCommenting, currentEntry)
+                else currentEntry.value?.let { CommentPage(it, currentSt) }
+            }
+            true -> currentEntry.value?.let { EditPage(it, currentSt) }
         }
     }
 }
 
 @Composable
 fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing : MutableState<Boolean>,
-            entryForEdit : MutableState<Entry?>) {
+            isCommenting : MutableState<Boolean>,
+            currentEntry : MutableState<Entry?>) {
     getUsersEntries(user.id, userEntriesList)
     Box(
         modifier = Modifier
@@ -124,7 +130,7 @@ fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing 
                     modifier = Modifier.padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    EntryInProfile(user, entry1, Modifier.fillMaxWidth(), isEditing, entryForEdit)
+                    EntryInProfile(user, entry1, Modifier.fillMaxWidth(), isEditing, isCommenting, currentEntry)
                 }
             }
         }
@@ -133,7 +139,8 @@ fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing 
 
 @Composable
 fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : MutableState<Boolean>,
-                  entryForEdit : MutableState<Entry?>) : Unit {
+                   isCommenting : MutableState<Boolean>,
+                  currentEntry: MutableState<Entry?>) : Unit {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -181,7 +188,7 @@ fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : M
                     horizontalArrangement = Arrangement.End
                 ){
                     IconButton(onClick = {
-                        entryForEdit.value = entry
+                        currentEntry.value = entry
                         isEditing.value = true
                     }) {
                         Icon(MyIcons.edit, contentDescription = "Редактирование")
@@ -197,6 +204,17 @@ fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : M
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ){
+                IconButton(onClick = {
+                    currentEntry.value = entry
+                    isCommenting.value = true
+                }) {
+                    Icon(MyIcons.list, contentDescription = "Комментарии")
+                }
+            }
         }
     }
 }

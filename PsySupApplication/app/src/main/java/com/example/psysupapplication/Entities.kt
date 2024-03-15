@@ -21,3 +21,13 @@ data class Entry(
     var public: Boolean,
     var topics: List<Int>
 )
+
+data class Comment(
+    val id: Int,
+    val iduser: Int,
+    val posted: String,
+    val content: String,
+    val moderated: Boolean,
+    val idpost: Int,
+    val idanscomment: Int
+)
