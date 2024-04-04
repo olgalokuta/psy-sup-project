@@ -20,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -130,7 +131,7 @@ fun EntryInLine(user : User, entry : Entry, modifier: Modifier) : Unit {
         }
     }
 }
-
+@Composable
 fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -148,7 +149,7 @@ fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) 
     val apiEntry = retrofit.create(EntryAPI::class.java)
     val apiUser = retrofit.create(UserAPI::class.java)
 
-    CoroutineScope(Dispatchers.IO).launch {
+    LaunchedEffect(Unit) {
         var listEntries = apiEntry.getPublicEntries().reversed()
         var listUsers = mutableListOf<User>()
         for (entry in listEntries) {
@@ -156,4 +157,13 @@ fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) 
         }
         entriesAndAuthors.value = EntryAndAuthorLists(listEntries, listUsers)
     }
+
+    /*CoroutineScope(Dispatchers.IO).launch {
+        var listEntries = apiEntry.getPublicEntries().reversed()
+        var listUsers = mutableListOf<User>()
+        for (entry in listEntries) {
+            listUsers.add(apiUser.getUserById(entry.iduser))
+        }
+        entriesAndAuthors.value = EntryAndAuthorLists(listEntries, listUsers)
+    }*/
 }

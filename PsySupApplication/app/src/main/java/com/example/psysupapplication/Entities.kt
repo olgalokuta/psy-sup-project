@@ -1,15 +1,16 @@
 package com.example.psysupapplication
 
 data class User (
-    var id: Int,
-    var username: String,
-    var email: String,
-    var phone: String,
-    var password: String,
-    var pfp: Int,
-    var gender: Boolean,
-    var birthday: String,
-    var topics: List<Int>
+    val id: Int,
+    val username: String,
+    val email: String,
+    val phone: String,
+    val password: String,
+    val pfp: Int,
+    val gender: Boolean,
+    val birthday: String,
+    val topics: List<Int>,
+    val role: String
 )
 
 data class Entry(
@@ -23,11 +24,8 @@ data class Entry(
 )
 
 data class Comment(
-    val id: Int,
-    val iduser: Int,
+    val idUser: Int,
+    val identry: Int,
     val posted: String,
     val content: String,
-    val moderated: Boolean,
-    val idpost: Int,
-    val idanscomment: Int
 )

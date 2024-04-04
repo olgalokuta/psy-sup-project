@@ -1,14 +1,15 @@
 package com.example.psysupapplication
 
 data class UserWithoutId(
-    var username: String,
-    var email: String,
-    var phone: String,
-    var password: String,
-    var pfp: Int,
-    var gender: Boolean,
-    var birthday: String,
-    var topics: List<Int>
+    val username: String,
+    val email: String,
+    val phone: String,
+    val password: String,
+    val pfp: Int,
+    val gender: Boolean,
+    val birthday: String,
+    val topics: List<Int>,
+    val role: String
 )
 
 data class EntryWithoutId(

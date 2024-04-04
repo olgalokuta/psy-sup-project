@@ -40,14 +40,16 @@ fun BottomPanel(state : MutableState<String>) : Unit {
                 onClick = { state.value = "EntriesPage" }
             )
         )
-        Text(text = "Создать пост",
+        Text(
+            text = "Создать пост",
             fontSize = 20.sp,
             color = Color.White.copy(alpha = 0.8f),
             modifier = Modifier.clickable(
                 onClick = { state.value = "CreateEntryPage" }
             )
         )
-        Text(text = "Профиль",
+        Text(
+            text = "Профиль",
             fontSize = 20.sp,
             color = Color.White.copy(alpha = 0.8f),
             modifier = Modifier.clickable(

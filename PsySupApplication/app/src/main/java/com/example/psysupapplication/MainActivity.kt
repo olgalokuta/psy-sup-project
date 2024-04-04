@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -19,23 +20,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val state = remember {
-                mutableStateOf(false)
-            }
-
-            val u = remember{
-                mutableStateOf(User(
-                    1,
-                    "username",
-                    "email@gamil.com",
-                    "898788888",
-                    "1234",
-                    1,
-                    true,
-                    "2003-01-01",
-                    emptyList()
-                ))
-            }
+            val state = remember { mutableStateOf(false) }
+            val u = remember{ mutableStateOf<User?>(null) }
 
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
@@ -44,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     else -> MainPage(u.value)
 //                    false -> RegistrationPage(state, u)
 //                    else -> IdentityPage(state)
-
                 }
             }
         }
@@ -52,23 +37,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainPage(u : User) : Unit {
+fun MainPage(u : User?) : Unit {
     val state = remember { mutableStateOf("EntriesPage") }
     val userPostsList = remember { mutableStateOf(listOf<Entry>()) }
     val entriesAndAuthors = remember { mutableStateOf(EntryAndAuthorLists(listOf<Entry>(), listOf<User>())) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ){
-        Crossfade(targetState = state, label = "") { currentSt ->
-            when (currentSt.value) {
-                "EntriesPage" -> EntriesPage(entriesAndAuthors)
-                "CreateEntryPage" -> CreatePage(u)
-                "ProfilePage" -> ProfilePage(u, userPostsList)
+    u?.let{
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ){
+            Crossfade(targetState = state, label = "") { currentSt ->
+                when (currentSt.value) {
+                    "EntriesPage" -> EntriesPage(entriesAndAuthors)
+                    "CreateEntryPage" -> CreatePage(it)
+                    "ProfilePage" -> ProfilePage(it, userPostsList)
+                }
             }
+            BottomPanel(state)
         }
-        BottomPanel(state)
     }
 }

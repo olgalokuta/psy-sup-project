@@ -100,7 +100,7 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
             )
             Button(
                 onClick = {
-                    val user1 = UserWithoutId(username, email, phone, password, gender = false, birthday = "2024-01-17", pfp =1, topics = emptyList())
+                    val user1 = UserWithoutId(username, email, phone, password, role="USE", gender=false, birthday="2024-01-17", pfp=1, topics=emptyList())
                     val text = "Вы ввели не все данные!"
                     val duration = Toast.LENGTH_SHORT
 
@@ -124,11 +124,7 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
     }
 }
 
-
-
 fun createUser (user1 : UserWithoutId) {
-
-    var user : User
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -144,6 +140,6 @@ fun createUser (user1 : UserWithoutId) {
 
     val api = retrofit.create(UserAPI::class.java)
     CoroutineScope(Dispatchers.IO).launch {
-        user = api.createUser(user1)
+        val user = api.createUser(user1)
     }
 }

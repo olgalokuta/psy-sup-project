@@ -61,8 +61,8 @@ fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
 
     Box (
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.92f),
+            .fillMaxWidth(),
+            //.fillMaxHeight(0.92f),
         contentAlignment = Alignment.TopCenter
     ){
         Column (
@@ -129,116 +129,6 @@ fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
                     Text(text = "Пост отредактирован!")
                 }
             }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
-    val user = remember { mutableStateOf<User?>(null) }
-    getUserByID(user, entry.iduser)
-    user.value?.let {
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            item {
-                Box(
-                    modifier = Modifier.padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EntryInLine(it, entry, Modifier.fillMaxWidth(0.9f))
-                }
-            }
-            item {
-                Text(
-                    text = "Комментарии",
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier
-                        .padding(horizontal = 30.dp, vertical = 10.dp)
-                        .fillMaxWidth()
-                )
-            }
-            item{
-                CommentView(
-                    Comment(1, 1, "12.12.12", "Comment1", true, entry.id, 1),
-                    it,
-                    Modifier.fillMaxWidth(0.9f)
-                )
-            }
-            item{
-                CommentView(
-                    Comment(1, 1, "12.12.12", "Comment1", true, entry.id, 1),
-                    it,
-                    Modifier.fillMaxWidth(0.9f)
-                )
-            }
-            item{
-                CommentView(
-                    Comment(1, 1, "12.12.12", "Comment1", true, entry.id, 1),
-                    it,
-                    Modifier.fillMaxWidth(0.9f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CommentView(comment : Comment, user : User, modifier : Modifier) {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = Purple80
-        )
-    ) {
-        Column(modifier = Modifier.padding(15.dp)) {
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.default_avatar),
-                    contentDescription = "Default avatar",
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(15.dp))
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight(fraction = 0.8f),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(
-                        text = user.username,
-                        color = Color.Black,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = comment.posted,
-                        color = Color.Black.copy(alpha = 0.7f),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = comment.content,
-                color = Color.Black.copy(alpha = 0.7f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }

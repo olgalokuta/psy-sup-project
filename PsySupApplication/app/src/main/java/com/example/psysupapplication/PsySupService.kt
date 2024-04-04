@@ -39,25 +39,37 @@ interface UserAPI {
 }
 
 interface EntryAPI {
-    @GET("posts")
+    @GET("entries")
     suspend fun getAllEntries() : List<Entry>
 
-    @GET("posts/user/{id}")
+    @GET("entries/user/{id}")
     suspend fun getUserEntries(
         @Path("id") id: Int
     ) : List<Entry>
 
-    @GET("posts/public")
+    @GET("entries/public")
     suspend fun getPublicEntries() : List<Entry>
 
-    @POST("posts")
+    @POST("entries")
     suspend fun createEntry(
         @Body noIdEntry : EntryWithoutId
     ) : Entry
 
-    @PUT("posts/{id}")
+    @PUT("entries/{id}")
     suspend fun updateEntry(
         @Path("id") id: Int,
         @Body entry : Entry
     ) : Entry
+}
+
+interface CommentAPI {
+    @GET("comments/entry/{eid}")
+    suspend fun getEntryComments(
+        @Path("eid") id: Int
+    ) : List<Comment>
+
+    @POST("comments")
+    suspend fun createComment(
+        @Body comment : Comment
+    ) : Comment
 }

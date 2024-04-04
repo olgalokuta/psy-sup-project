@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,7 @@ object MyIcons{
     val edit = Icons.Filled.Edit
     val person = Icons.Filled.Person
     val star = Icons.Filled.Star
+    val send = Icons.Filled.Send
 }
 
 data class ProfileInfo(
@@ -289,7 +292,7 @@ fun ProfileInfoCard(user : User) {
         }
     }
 }
-
+@Composable
 fun getUsersEntries (userId : Int, userEntriesList : MutableState<List<Entry>>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -305,7 +308,10 @@ fun getUsersEntries (userId : Int, userEntriesList : MutableState<List<Entry>>) 
         .build()
 
     val api = retrofit.create(EntryAPI::class.java)
-    CoroutineScope(Dispatchers.IO).launch {
+    LaunchedEffect(Unit) {
         userEntriesList.value = api.getUserEntries(userId).reversed()
     }
+    /*CoroutineScope(Dispatchers.IO).launch {
+        userEntriesList.value = api.getUserEntries(userId).reversed()
+    }*/
 }
