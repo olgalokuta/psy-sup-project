@@ -90,8 +90,7 @@ fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit
 
 @Composable
 fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing : MutableState<Boolean>,
-            isCommenting : MutableState<Boolean>,
-            currentEntry : MutableState<Entry?>) {
+            isCommenting : MutableState<Boolean>, currentEntry : MutableState<Entry?>) {
     getUsersEntries(user.id, userEntriesList)
     Box(
         modifier = Modifier
@@ -142,7 +141,7 @@ fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing 
 
 @Composable
 fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : MutableState<Boolean>,
-                   isCommenting : MutableState<Boolean>,
+                  isCommenting : MutableState<Boolean>,
                   currentEntry: MutableState<Entry?>) : Unit {
     Card(
         modifier = modifier,
