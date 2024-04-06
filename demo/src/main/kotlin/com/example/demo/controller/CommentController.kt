@@ -19,6 +19,10 @@ class CommentController(@Autowired private val commentRepository: CommentReposit
     fun getAllEntryComments(@PathVariable("eid") entryId: Int): List<Comment> =
         commentRepository.findByIdentry(entryId).toList()
 
+    @GetMapping("/formoderation")
+    fun getUnmoderatedComments():List<Comment> = 
+        commentRepository.findByModerated(false).toList()
+
     @PostMapping("")
     fun createComment(@RequestBody comment: Comment): ResponseEntity<Comment> {
         val createdComment = commentRepository.save(comment)
