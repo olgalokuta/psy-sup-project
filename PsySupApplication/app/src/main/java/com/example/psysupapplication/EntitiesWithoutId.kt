@@ -20,4 +20,11 @@ data class EntryWithoutId(
     val public: Boolean,
     val topics: List<Int>
 )
-
+data class CommentWithoutId(
+    val iduser: Int,
+    val posted: String,
+    val content: String,
+    val moderated: Boolean,
+    val identry: Int,
+    val idanscomment: Int
+)

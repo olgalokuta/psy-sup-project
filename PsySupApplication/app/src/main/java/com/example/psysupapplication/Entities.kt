@@ -24,8 +24,11 @@ data class Entry(
 )
 
 data class Comment(
-    val idUser: Int,
-    val identry: Int,
+    val id: Int,
+    val iduser: Int,
     val posted: String,
     val content: String,
+    val moderated: Boolean,
+    val identry: Int,
+    val idanscomment: Int
 )

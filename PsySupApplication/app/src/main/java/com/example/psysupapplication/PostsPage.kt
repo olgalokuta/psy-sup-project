@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,12 +44,25 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 data class EntryAndAuthorLists(
-    val entry: List<Entry>,
-    val author: List<User>
+    val entries: List<Entry>,
+    val authors: List<User>
 )
 
 @Composable
-fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>) : Unit {
+fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>, currentUser: User) : Unit {
+    val isCommenting = remember { mutableStateOf(false) }
+    val currentEntry = remember { mutableStateOf<Entry?>(null) }
+    Crossfade(targetState = isCommenting, label = "") { currentSt ->
+        when (currentSt.value) {
+            true -> currentEntry.value?.let { CommentPage(it, currentSt, currentUser) }
+            false -> EntriesInScroll(entrysAndAuthors, isCommenting, currentEntry)
+        }
+    }
+}
+
+@Composable
+fun EntriesInScroll(entrysAndAuthors : MutableState<EntryAndAuthorLists>, isCommenting: MutableState<Boolean>,
+                    currentEntry: MutableState<Entry?>) {
     getAllPublicEntries(entrysAndAuthors)
     Box(
         modifier = Modifier
@@ -66,71 +82,20 @@ fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>) : Unit {
                         .fillMaxWidth()
                 )
             }
-            
-            items(entrysAndAuthors.value.author.zip(entrysAndAuthors.value.entry)){ authorAndEntry->
+
+            items(entrysAndAuthors.value.authors.zip(entrysAndAuthors.value.entries)){ authorAndEntry->
                 Box(
                     modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    EntryInLine(authorAndEntry.component1(), authorAndEntry.component2(), Modifier.fillMaxWidth())
+                    val isEditing = remember { mutableStateOf(false) }
+                    EntryView(authorAndEntry.component1(), authorAndEntry.component2(), isEditing, isCommenting, currentEntry, false)
                 }
             }
         }
     }
 }
 
-@Composable
-fun EntryInLine(user : User, entry : Entry, modifier: Modifier) : Unit {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = PurpleGrey80
-        )
-    ) {
-        Column (modifier = Modifier.padding(15.dp)){
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.default_avatar),
-                    contentDescription = "Default avatar",
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(15.dp))
-
-                Column (
-                    modifier = Modifier
-                        .fillMaxHeight(fraction = 0.8f),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(
-                        text = user.username,
-                        color = Color.Black,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = entry.posted,
-                        color = Color.Black.copy(alpha = 0.7f),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            
-            Text(
-                text = entry.content,
-                color = Color.Black.copy(alpha = 0.7f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
 @Composable
 fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) {
     val interceptor = HttpLoggingInterceptor()

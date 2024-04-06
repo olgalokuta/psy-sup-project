@@ -70,6 +70,6 @@ interface CommentAPI {
 
     @POST("comments")
     suspend fun createComment(
-        @Body comment : Comment
+        @Body comment : CommentWithoutId
     ) : Comment
 }

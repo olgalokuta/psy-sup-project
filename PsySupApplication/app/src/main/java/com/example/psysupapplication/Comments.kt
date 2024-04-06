@@ -50,14 +50,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Date
 
+data class CommentAndAuthorLists(
+    val comments: List<Comment>,
+    val authors: List<User>
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
-    val entryComments = remember { mutableStateOf<List<Comment>?>(emptyList()) }
+fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>, currentUser: User) : Unit {
+    val CommentsPlusAuthors = remember { mutableStateOf<CommentAndAuthorLists?>(null) }
     val user = remember { mutableStateOf<User?>(null) }
     var commentText by rememberSaveable { mutableStateOf("") }
     getUserById(entry.iduser, user)
-    getEntryComments(entry.id, entryComments)
+    getEntryComments(entry.id, CommentsPlusAuthors)
     Box(
         modifier = Modifier.fillMaxWidth()
             .fillMaxHeight(0.92f)
@@ -80,7 +85,7 @@ fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(vertical = 10.dp)
                             )
-                            user.value?.let {EntryInLine(it, entry, Modifier.fillMaxWidth())}
+                            user.value?.let {StaticEntry(it, entry)}
                         }
                     }
                 }
@@ -96,13 +101,13 @@ fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
                         }
                     }
                 }
-                entryComments.value?.let{
-                    items(it){comment->
+                CommentsPlusAuthors.value?.let{
+                    items(it.authors.zip(it.comments)){commentPlusAuthor->
                         Box(
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            user.value?.let { CommentView(comment, it, Modifier.fillMaxWidth())}
+                            CommentView(commentPlusAuthor.component1(), commentPlusAuthor.component2())
                         }
                     }
                 }
@@ -123,7 +128,7 @@ fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
                         placeholder = { Text(text = "Введите комментарий") }
                     )
                     IconButton(onClick = {
-                        postComment(commentText, entry.iduser, entry.id)
+                        postComment(commentText, currentUser.id, entry.id)
                         commentText = ""
                         isEditing.value = false
                     }) {
@@ -136,9 +141,9 @@ fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
 }
 
 @Composable
-fun CommentView(comment : Comment, user : User, modifier : Modifier) {
+fun CommentView(user : User, comment : Comment) {
     Card(
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = Purple80
@@ -212,9 +217,8 @@ fun getUserById (userID : Int, u: MutableState<User?>) {
 //    }
 }
 
-
 @Composable
-fun getEntryComments (entryId : Int, entryComments : MutableState<List<Comment>?>) {
+fun getEntryComments (entryId : Int, commentsAndAuthors : MutableState<CommentAndAuthorLists?>) {
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -228,19 +232,23 @@ fun getEntryComments (entryId : Int, entryComments : MutableState<List<Comment>?
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val api = retrofit.create(CommentAPI::class.java)
+    val apiComment = retrofit.create(CommentAPI::class.java)
+    val apiUser = retrofit.create(UserAPI::class.java)
+
     LaunchedEffect(Unit) {
-        entryComments.value = api.getEntryComments(entryId).reversed()
+        var listComments = apiComment.getEntryComments(entryId).reversed()
+        var listUsers = mutableListOf<User>()
+        for (comment in listComments) {
+            listUsers.add(apiUser.getUserById(comment.iduser))
+        }
+        commentsAndAuthors.value = CommentAndAuthorLists(listComments, listUsers)
     }
-//    CoroutineScope(Dispatchers.IO).launch {
-//        entryComments.value = api.getEntryComments(entryId).reversed()
-//    }
 }
 
 fun postComment (content: String, idUser: Int, entryId: Int) {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
     val currentDate = sdf.format(Date())
-    val comment = Comment(idUser, entryId, currentDate, content)
+    val comment = CommentWithoutId(idUser, currentDate, content, false, entryId, 0)
 
     val interceptor = HttpLoggingInterceptor()
     interceptor.level = HttpLoggingInterceptor.Level.BODY

@@ -81,7 +81,7 @@ fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit
             false -> {
                 if (!isCommenting.value)
                     Profile(user, userEntriesList, isEditing, isCommenting, currentEntry)
-                else currentEntry.value?.let { CommentPage(it, currentSt) }
+                else currentEntry.value?.let { CommentPage(it, currentSt, user) }
             }
             true -> currentEntry.value?.let { EditPage(it, currentSt) }
         }
@@ -132,89 +132,7 @@ fun Profile(user : User, userEntriesList : MutableState<List<Entry>>, isEditing 
                     modifier = Modifier.padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    EntryInProfile(user, entry1, Modifier.fillMaxWidth(), isEditing, isCommenting, currentEntry)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun EntryInProfile(user : User, entry : Entry, modifier: Modifier, isEditing : MutableState<Boolean>,
-                  isCommenting : MutableState<Boolean>,
-                  currentEntry: MutableState<Entry?>) : Unit {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = PurpleGrey80
-        )
-    ) {
-        Column (modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp)){
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.default_avatar),
-                    contentDescription = "Default avatar",
-                    modifier = Modifier.size(42.dp).clip(CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(15.dp))
-
-                Column (
-                    modifier = Modifier.fillMaxHeight(fraction = 0.8f),
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(
-                        text = user.username,
-                        color = Color.Black,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = entry.posted,
-                        color = Color.Black.copy(alpha = 0.7f),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    val text : String
-                    if (entry.public) text = "Публичный" else text = "Приватный"
-                    Text(
-                        text = text,
-                        color = Color.Black.copy(alpha = 0.7f),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ){
-                    IconButton(onClick = {
-                        currentEntry.value = entry
-                        isEditing.value = true
-                    }) {
-                        Icon(MyIcons.edit, contentDescription = "Редактирование")
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = entry.content,
-                color = Color.Black.copy(alpha = 0.7f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ){
-                IconButton(onClick = {
-                    currentEntry.value = entry
-                    isCommenting.value = true
-                }) {
-                    Icon(MyIcons.list, contentDescription = "Комментарии")
+                    EntryView(user, entry1, isEditing, isCommenting, currentEntry, true)
                 }
             }
         }

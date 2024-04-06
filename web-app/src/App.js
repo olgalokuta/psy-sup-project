@@ -16,7 +16,7 @@ const App = () => {
         <Link to={"/home"} className="navbar-brand">
               Главная страница
             </Link>
-        <Link to={"/login"} className="navbar-brand">
+          <Link to={"/login"} className="navbar-brand">
             Войти
             </Link>
       </nav>
