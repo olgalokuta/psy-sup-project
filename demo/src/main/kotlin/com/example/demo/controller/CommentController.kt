@@ -8,6 +8,7 @@ import com.example.demo.repositories.CommentRepository
 import com.example.demo.models.Comment
 
 @RestController
+@CrossOrigin(origins=["http://localhost:3000"])
 @RequestMapping("/api/comments")
 class CommentController(@Autowired private val commentRepository: CommentRepository) {
 
@@ -18,6 +19,10 @@ class CommentController(@Autowired private val commentRepository: CommentReposit
     @GetMapping("/entry/{eid}")
     fun getAllEntryComments(@PathVariable("eid") entryId: Int): List<Comment> =
         commentRepository.findByIdentry(entryId).toList()
+
+    @GetMapping("/formoderation")
+    fun getUnmoderatedComments():List<Comment> = 
+        commentRepository.findByModerated(false).toList()
 
     @PostMapping("")
     fun createComment(@RequestBody comment: Comment): ResponseEntity<Comment> {

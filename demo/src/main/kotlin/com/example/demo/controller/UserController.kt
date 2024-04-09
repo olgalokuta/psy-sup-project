@@ -5,59 +5,47 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.demo.models.User
-import com.example.demo.repositories.UserRepository
+import com.example.demo.service.UserService
 
 @RestController
 @RequestMapping("/api/users")
-class UserController(@Autowired private val userRepository: UserRepository) {
+class UserController(private val userService: UserService) {
 
     @GetMapping("")
-    fun getAllUsers(): List<User> =
-        userRepository.findAll().toList()
+    fun getAllUsers(): ResponseEntity<List<User>> =
+        ResponseEntity(userService.findAll(), HttpStatus.OK)
 
     @PostMapping("")
     fun createUser(@RequestBody user: User): ResponseEntity<User> {
-        val createdUser = userRepository.save(user)
-        return ResponseEntity(createdUser, HttpStatus.CREATED)
+        val createdUser = userService.createUser(user)
+        return if (createdUser != null) ResponseEntity(createdUser, HttpStatus.CREATED)
+            else ResponseEntity(HttpStatus.BAD_REQUEST)
     }
 
     @GetMapping("/name/{un}")
     fun getUserByUsername(@PathVariable("un") username: String): ResponseEntity<User> {
-        val user = userRepository.findByUsername(username).toList()
-        return if (user != null) ResponseEntity(user[0], HttpStatus.OK)
+        val user = userService.findByUsername(username)
+        return if (user != null) ResponseEntity(user, HttpStatus.OK)
                else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable("id") userId: Int): ResponseEntity<User> {
-        val user = userRepository.findById(userId).orElse(null)
+        val user = userService.findById(userId)
         return if (user != null) ResponseEntity(user, HttpStatus.OK)
                else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
     @PutMapping("/{id}")
     fun updateUserById(@PathVariable("id") userId: Int, @RequestBody user: User): ResponseEntity<User> {
-
-        val existingUser = userRepository.findById(userId).orElse(null)
-
-        if (existingUser == null) {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-
-        val updatedUser = existingUser.copy(username = user.username, 
-            email = user.email, phone = user.phone, password = user.password,
-            birthday = user.birthday, pfp = user.pfp, gender = user.gender, 
-            topics = user.topics)
-        userRepository.save(updatedUser)
-        return ResponseEntity(updatedUser, HttpStatus.OK)
+        val user = userService.updateById(userId, user)
+        return if (user != null) ResponseEntity(user, HttpStatus.OK)
+            else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
     @DeleteMapping("/{id}")
     fun deleteUserById(@PathVariable("id") userId: Int): ResponseEntity<User> {
-        if (!userRepository.existsById(userId)) {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-        userRepository.deleteById(userId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        return if (userService.deleteById(userId)) ResponseEntity(HttpStatus.NO_CONTENT)
+        else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 }

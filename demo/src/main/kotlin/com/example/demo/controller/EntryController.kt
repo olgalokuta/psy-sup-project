@@ -23,6 +23,10 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
     fun getAllPublicEntries():List<Entry> = 
         entryRepository.findByPublic(true).toList()
 
+    @GetMapping("/formoderation")
+    fun getUnmoderatedEntries():List<Entry> = 
+        entryRepository.findByModerated(false).toList()
+
     @PostMapping("")
     fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
         val createdEntry = entryRepository.save(entry)
