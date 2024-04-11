@@ -8,6 +8,7 @@ import com.example.demo.repositories.EntryRepository
 import com.example.demo.models.Entry
 
 @RestController
+@CrossOrigin(origins=["http://localhost:3000"])
 @RequestMapping("/api/entries")
 class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
