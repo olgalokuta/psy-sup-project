@@ -22,11 +22,11 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
     @GetMapping("/public")
     fun getAllPublicEntries():List<Entry> = 
-        entryRepository.findByPublic(true).toList()
+        entryRepository.findByPublicAndModerated(true,true).toList()
 
     @GetMapping("/formoderation")
     fun getUnmoderatedEntries():List<Entry> = 
-        entryRepository.findByModerated(false).toList()
+        entryRepository.findByPublicAndModerated(true, false).toList()
 
     @PostMapping("")
     fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
