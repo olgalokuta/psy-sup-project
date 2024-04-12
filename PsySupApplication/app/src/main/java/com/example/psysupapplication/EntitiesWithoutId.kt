@@ -8,8 +8,7 @@ data class UserWithoutId(
     val pfp: Int,
     val gender: Boolean,
     val birthday: String,
-    val topics: List<Int>,
-    val role: String
+    val topics: List<Int>
 )
 
 data class EntryWithoutId(
