@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -40,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.psysupapplication.ui.theme.Purple80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,18 +62,18 @@ data class CommentAndAuthorLists(
 
 @Composable
 fun CommentPage (entry : Entry, currentUser: User): Unit {
-    val hasNew = remember { mutableStateOf(false) }
     val CommentsPlusAuthors = remember { mutableStateOf<CommentAndAuthorLists?>(null) }
     val user = remember { mutableStateOf<User?>(null) }
     getUserById(entry.iduser, user)
     getEntryComments(entry.id, CommentsPlusAuthors)
-    CommentsPageIter(entry, currentUser, CommentsPlusAuthors, user, hasNew)
+    CommentsPageIter(entry, currentUser, CommentsPlusAuthors, user)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : MutableState<CommentAndAuthorLists?>, user: MutableState<User?>, hasNew: MutableState<Boolean>) : Unit {
+fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : MutableState<CommentAndAuthorLists?>, user: MutableState<User?>) : Unit {
     var commentText by rememberSaveable { mutableStateOf("") }
+    var dialogOpen by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -142,10 +146,24 @@ fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : Muta
                     IconButton(onClick = {
                         postComment(commentText, currentUser.id, entry.id)
                         commentText = ""
-                        hasNew.value = true
+                        dialogOpen = true
                     }) {
                         Icon(MyIcons.send, contentDescription = "Новый комментарий")
                     }
+                }
+            }
+        }
+    }
+    if (dialogOpen) {
+        Dialog(onDismissRequest = {
+            dialogOpen = false
+        }) {
+            Surface(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                shape = RoundedCornerShape(size = 10.dp)
+            ) {
+                Column(modifier = Modifier.padding(all = 20.dp)) {
+                    Text(text = "Ваш комментарий отправлен на модерацию")
                 }
             }
         }
