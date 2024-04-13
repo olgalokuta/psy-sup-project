@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,24 +56,35 @@ data class CommentAndAuthorLists(
     val authors: List<User>
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>, currentUser: User) : Unit {
+fun CommentPage (entry : Entry, currentUser: User): Unit {
+    val hasNew = remember { mutableStateOf(false) }
     val CommentsPlusAuthors = remember { mutableStateOf<CommentAndAuthorLists?>(null) }
     val user = remember { mutableStateOf<User?>(null) }
-    var commentText by rememberSaveable { mutableStateOf("") }
     getUserById(entry.iduser, user)
     getEntryComments(entry.id, CommentsPlusAuthors)
+    CommentsPageIter(entry, currentUser, CommentsPlusAuthors, user, hasNew)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : MutableState<CommentAndAuthorLists?>, user: MutableState<User?>, hasNew: MutableState<Boolean>) : Unit {
+    var commentText by rememberSaveable { mutableStateOf("") }
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .fillMaxHeight(0.92f)
     ) {
         Column (
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            LazyColumn (modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
+            LazyColumn (modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)) {
                 item {
                     Box(
                         modifier = Modifier.padding(vertical = 30.dp, horizontal = 20.dp),
@@ -130,7 +142,7 @@ fun CommentPage(entry : Entry, isEditing : MutableState<Boolean>, currentUser: U
                     IconButton(onClick = {
                         postComment(commentText, currentUser.id, entry.id)
                         commentText = ""
-                        isEditing.value = false
+                        hasNew.value = true
                     }) {
                         Icon(MyIcons.send, contentDescription = "Новый комментарий")
                     }
