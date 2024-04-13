@@ -8,6 +8,7 @@ import com.example.demo.models.User
 import com.example.demo.service.UserService
 
 @RestController
+@CrossOrigin(origins=["http://localhost:3000"])
 @RequestMapping("/api/users")
 class UserController(private val userService: UserService) {
 

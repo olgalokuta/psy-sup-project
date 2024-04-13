@@ -532,4 +532,8 @@ components:
         identry:
           type: integer
         idanscomment:
+<<<<<<< HEAD
           type: integer
+=======
+          type: integer
+>>>>>>> b441302495d17836d52efbbb227257a7251fe6b5
