@@ -24,7 +24,7 @@ const Home = () => {
   return (
     <div className="container">
       <header className="jumbotron">
-        <h3>{content}</h3>
+        <h3>Количество записей: {content.length}</h3>
       </header>
     </div>
   );

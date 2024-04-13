@@ -1,22 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/authService.js";
-
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="invalid-feedback d-block">
-        Это поле обязательно для заполнения!
-      </div>
-    );
-  }
-};
+import Header from "./header.js";
 
 const Login = () => {
+  const fixedInputClass="rounded-md appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+
   const form = useRef();
   const checkBtn = useRef();
 
@@ -30,99 +20,68 @@ const Login = () => {
   const onChangeUsername = (e) => {
     const username = e.target.value;
     setUsername(username);
+    setMessage("");
   };
 
   const onChangePassword = (e) => {
     const password = e.target.value;
     setPassword(password);
+    setMessage("");
   };
 
   const handleLogin = (e) => {
+    console.log(username);
+    console.log(password);
     e.preventDefault();
 
     setMessage("");
     setLoading(true);
 
-    form.current.validateAll();
-
-    if (checkBtn.current.context._errors.length === 0) {
-      AuthService.login(username, password).then(
-        () => {
+    AuthService.login(username).then(
+      (res) => {
+        if (res.data.password === password){
           navigate("/profile");
           window.location.reload();
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          setLoading(false);
-          setMessage(resMessage);
         }
-      );
-    } else {
-      setLoading(false);
-    }
+        else setMessage("Неправильный никнейм или пароль");
+      },
+      (error) =>
+        setMessage("Неправильный никнейм или пароль")
+    );
   };
 
-  return (
-    <div className="col-md-12">
-      <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
-
-        <Form onSubmit={handleLogin} ref={form}>
-          <div className="form-group">
-            <label htmlFor="username">Логин</label>
-            <Input
-              type="text"
-              className="form-control"
-              name="username"
-              value={username}
-              onChange={onChangeUsername}
-              validations={[required]}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Пароль</label>
-            <Input
-              type="password"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={onChangePassword}
-              validations={[required]}
-            />
-          </div>
-
-          <div className="form-group">
-            <button className="btn btn-primary btn-block" disabled={loading}>
-              {loading && (
-                <span className="spinner-border spinner-border-sm"></span>
-              )}
-              <span>Login</span>
-            </button>
-          </div>
-
-          {message && (
-            <div className="form-group">
-              <div className="alert alert-danger" role="alert">
-                {message}
-              </div>
-            </div>
-          )}
-          <CheckButton style={{ display: "none" }} ref={checkBtn} />
-        </Form>
-      </div>
-    </div>
-  );
+  return <div>
+    <Header
+      heading="Войдите в аккаунт"
+      paragraph="Еще нет аккаунта? "
+      linkName="Зарегестрируйтесь"
+      linkUrl="/login"/>
+    <form className="mt-8 space-y-6">
+      <input
+        name="Никнейм"
+        placeholder="Никнейм"
+        onChange={onChangeUsername}
+        value={username}
+        className={fixedInputClass}/>
+      <input
+        name="Пароль"
+        placeholder="Пароль"
+        onChange={onChangePassword}
+        value={password}
+        className={fixedInputClass}/>
+    </form>
+      <button
+          type="button"
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mt-10"
+          onClick={handleLogin}>
+        Войти
+      </button>
+      {message && (
+          <p className="mt-2 text-center text-sm text-gray-600 mt-5">
+              {message}
+          </p>
+        )}
+  </div>
 };
 
 export default Login;

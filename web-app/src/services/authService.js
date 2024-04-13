@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8080/api/users";
 
-const register = (username, email, phone, password, birth, pfp, gender, topics, role) => {
+const register = (username, email, phone, password, birth, pfp, gender, topics) => {
   return axios.post(API_URL, {
     username,
     email,
@@ -11,20 +11,15 @@ const register = (username, email, phone, password, birth, pfp, gender, topics, 
     birth,
     pfp,
     gender,
-    topics,
-    role
+    topics
   });
 };
 
-const login = (username, password) => {
-  return axios
-    .get(API_URL + "/name/" + username)
-    .then((response) => {
-      if (response.data.username) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
-      return response.data
-    });
+const login = (username) => {
+  return axios({
+    url: API_URL + "/name/" + username,
+    method: "GET"
+  })
 };
 
 const getCurrentUser = () => {
