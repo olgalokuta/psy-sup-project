@@ -54,7 +54,7 @@ fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>, currentUse
     val currentEntry = remember { mutableStateOf<Entry?>(null) }
     Crossfade(targetState = isCommenting, label = "") { currentSt ->
         when (currentSt.value) {
-            true -> currentEntry.value?.let { CommentPage(it, currentSt, currentUser) }
+            true -> currentEntry.value?.let { CommentPage(it, currentUser) }
             false -> EntriesInScroll(entrysAndAuthors, isCommenting, currentEntry)
         }
     }

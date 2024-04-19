@@ -60,7 +60,6 @@ object MyIcons{
     val phone = Icons.Filled.Phone
     val list = Icons.Filled.List
     val edit = Icons.Filled.Edit
-    val person = Icons.Filled.Person
     val star = Icons.Filled.Star
     val send = Icons.Filled.Send
 }
@@ -81,7 +80,7 @@ fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit
             false -> {
                 if (!isCommenting.value)
                     Profile(user, userEntriesList, isEditing, isCommenting, currentEntry)
-                else currentEntry.value?.let { CommentPage(it, currentSt, user) }
+                else currentEntry.value?.let {CommentPage(it, user) }
             }
             true -> currentEntry.value?.let { EditPage(it, currentSt) }
         }
