@@ -30,16 +30,14 @@ const Login = () => {
   };
 
   const handleLogin = (e) => {
-    console.log(username);
-    console.log(password);
     e.preventDefault();
-
     setMessage("");
     setLoading(true);
 
     AuthService.login(username).then(
       (res) => {
-        if (res.data.password === password){
+        if (res.data.password === password) {
+          localStorage.setItem("user", JSON.stringify(res.data));
           navigate("/profile");
           window.location.reload();
         }

@@ -1,0 +1,539 @@
+openapi: 3.0.3
+info:
+  title: Psy-Sup - OpenAPI 3.0
+  version: '3.0'
+tags:
+  - name: user
+    description: User information
+  - name: entry
+    description: Entry operations
+  - name: comment
+    description: Comment operations
+paths:
+  /api/users:
+    post:
+      tags:
+        - user
+      summary: Create user
+      operationId: createUser
+      requestBody: 
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: The location of the newly updeted group
+              schema:
+                type: string
+                format: uri
+                example: '/user/{id}'
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Server error
+    get:
+      tags:
+        - user
+      summary: List users
+      description: ''
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+  /api/users/name/{username}:
+    parameters:
+    - name: username
+      in: path
+      description: Username of the user
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+        - user
+      summary: Get user info
+      description: ''
+      operationId: getUserByUsername
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /api/users/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the user
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - user
+      summary: Get user info
+      description: ''
+      operationId: getUserById
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - user
+      summary: Update user
+      operationId: updateUserById
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      operationId: deleteUserByid
+      parameters:
+        - name: id
+          in: path
+          description: The user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /api/entries:
+    post:
+      tags:
+        - entry
+      summary: Create entry
+      operationId: createEntry
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entry'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: The location of the newly updeted entry
+              schema:
+                type: string
+                format: uri
+                example: '/entry/{id}'
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Server error
+    get:
+      tags:
+        - entry
+      summary: List entries
+      description: ''
+      operationId: getAllEntries
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+        '500':
+          description: Server error
+  /api/entries/user/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the user
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - entry
+      summary: List entries by user
+      description: ''
+      operationId: getAllUserPosts
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+        '500':
+          description: Server error
+  /api/entries/public:
+    get:
+      tags:
+        - entry
+      summary: List public (and moderated) entries
+      description: ''
+      operationId: getAllPublicEntries
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+        '500':
+          description: Server error
+  /api/entries/formoderation:
+    get:
+      tags:
+        - entry
+      summary: List public and unmoderated entries
+      description: ''
+      operationId: getAllUnmoderatedEntries
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+        '500':
+          description: Server error
+  /api/entries/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the entry
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - entry
+      summary: Get post info
+      description: ''
+      operationId: getPostById
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Post not found
+    put:
+      tags:
+        - entry
+      operationId: updatePostById
+      summary: Update post
+      requestBody:
+        description: Update an existent post
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entry'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - entry
+      summary: Delete entry
+      description: This can only be done by the logged in user.
+      operationId: deleteEntryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Post not found
+  /api/comments:
+    post:
+      tags:
+        - comment
+      summary: Create comment
+      operationId: createComment
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: The location of the newly updeted comment
+              schema:
+                type: string
+                format: uri
+                example: '/comments/{id}'
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Server error
+    get:
+      tags:
+        - comment
+      summary: List entries
+      description: ''
+      operationId: getAllComment
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Server error
+  /api/comments/entry/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the entry
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - comment
+      summary: List comments by entry
+      description: ''
+      operationId: getAllEntryComments
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Server error
+  /api/comments/formoderation:
+    get:
+      tags:
+        - comment
+      summary: List unmoderated comments
+      description: ''
+      operationId: getAllUnmoderatedComments
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Server error
+  /api/comments/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the comment
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - comment
+      summary: Get comment info
+      description: ''
+      operationId: getCommentById
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Post not found
+    put:
+      tags:
+        - comment
+      operationId: updateCommentById
+      summary: Update comment
+      requestBody:
+        description: Update an existent post
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entry'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - comment
+      summary: Delete comment
+      description: This can only be done by the logged in user.
+      operationId: deleteCommentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Post not found    
+components:
+  schemas:
+    User:
+      required:
+        - username
+        - email
+        - phone
+        - birthday
+        - password
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        email:
+          type: string
+          format: email
+          example: john@email.com
+        phone:
+          type: string
+          example: '12345'
+        birthday:
+          type: string
+          format: date
+        gender: 
+          type: boolean
+        pfp:
+          type: integer
+        topics:
+          type: array
+    Entry:
+      required:
+        - iduser
+        - posted
+        - content
+      properties:
+        iduser:
+          type: integer
+        content:
+          type: string
+        posted:
+          type: string
+          format: date
+        moderated:
+          type: boolean
+        public:
+          type: boolean
+        topics:
+          type: array
+    Comment:
+      required:
+        - iduser
+        - posted
+        - content
+        - identry
+      properties:
+        iduser:
+          type: integer
+        content:
+          type: string
+        posted:
+          type: string
+          format: date
+        moderated:
+          type: boolean
+        identry:
+          type: integer
+        idanscomment:
+<<<<<<< HEAD
+          type: integer
+=======
+          type: integer
+>>>>>>> b441302495d17836d52efbbb227257a7251fe6b5
