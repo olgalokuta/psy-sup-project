@@ -657,11 +657,13 @@ components:
           format: date
         role: 
           type: string
+          enum: [moderator, psychologist]
     Entry:
       required:
         - iduser
         - posted
         - content
+        - visibility
       properties:
         iduser:
           type: integer
@@ -672,8 +674,9 @@ components:
           format: date
         moderated:
           type: boolean
-        public:
-          type: boolean
+        visibility:
+          type: string
+          enum: [public, private, psychologist]
         topics:
           type: array
     Comment:

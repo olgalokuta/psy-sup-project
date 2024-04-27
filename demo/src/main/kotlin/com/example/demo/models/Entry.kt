@@ -3,6 +3,8 @@ package com.example.demo.models
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
+enum class Visibility {public, private, psychologist}
+
 @Entity
 @Table(name = "entries")
 data class Entry(
@@ -13,6 +15,6 @@ data class Entry(
     val posted: LocalDateTime,
     val content: String, 
     val moderated: Boolean, 
-    val public: Boolean,
+    val visibility: Visibility,
     val topics: List<Int>
 )
