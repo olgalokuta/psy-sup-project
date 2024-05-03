@@ -1,2 +1,2 @@
 /demo/postgres/data
-web-app/node_modules/.cache/default-development/0.pack
+/web-app/node_modules/.cache
