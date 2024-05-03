@@ -20,9 +20,21 @@ class CommentController(@Autowired private val commentRepository: CommentReposit
     fun getAllEntryComments(@PathVariable("eid") entryId: Int): List<Comment> =
         commentRepository.findByIdentry(entryId).toList()
 
-    @GetMapping("/formoderation")
-    fun getUnmoderatedComments():List<Comment> = 
-        commentRepository.findByModerated(false).toList()
+    @GetMapping("/formoderation/{id}")
+    fun getUnmoderatedComments(@PathVariable("id") modId: Int): ResponseEntity<Comment?> { 
+        val unfinished = commentRepository.findByModeratorAndModerated(modId, false)
+        if (unfinished.size > 0) return ResponseEntity(unfinished[0], HttpStatus.OK)
+        
+        val unmod = commentRepository.findByModeratedOrderByPostedAsc(false).toList()
+        for (e in unmod) {
+            if (e.moderator == null) {
+                val upd = e.copy(moderator = modId)
+                commentRepository.save(upd)
+                return ResponseEntity(upd, HttpStatus.OK)
+            }
+        }
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
 
     @PostMapping("")
     fun createComment(@RequestBody comment: Comment): ResponseEntity<Comment> {

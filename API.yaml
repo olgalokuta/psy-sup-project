@@ -363,13 +363,20 @@ paths:
                   $ref: '#/components/schemas/Entry'
         '500':
           description: Server error
-  /api/entries/formoderation:
+  /api/entries/formoderation/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the moderator
+      required: true
+      schema:
+        type: integer
     get:
       tags:
         - entry
-      summary: List public and unmoderated entries
+      summary: List public and unmoderated entries for specific moderator
       description: ''
-      operationId: getAllUnmoderatedEntries
+      operationId: getUnmoderatedEntries
       responses:
         '200':
           description: successful operation
@@ -513,13 +520,20 @@ paths:
                   $ref: '#/components/schemas/Comment'
         '500':
           description: Server error
-  /api/comments/formoderation:
+  /api/comments/formoderation/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the moderator
+      required: true
+      schema:
+        type: integer
     get:
       tags:
         - comment
-      summary: List unmoderated comments
+      summary: List unmoderated comments by moderator
       description: ''
-      operationId: getAllUnmoderatedComments
+      operationId: getUnmoderatedComments
       responses:
         '200':
           description: successful operation
@@ -674,6 +688,9 @@ components:
           format: date
         moderated:
           type: boolean
+        moderator:
+          type: boolean
+          description: Moderator responsible for entry
         visibility:
           type: string
           enum: [public, private, psychologist]

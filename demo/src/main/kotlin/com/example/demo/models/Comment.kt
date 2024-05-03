@@ -13,6 +13,7 @@ data class Comment(
     val posted: LocalDateTime,
     val content: String, 
     val moderated: Boolean, 
+    val moderator: Int?,
     val identry: Int,
     val idanscomment: Int
 )

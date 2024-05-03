@@ -14,7 +14,8 @@ data class Entry(
     val iduser: Int,
     val posted: LocalDateTime,
     val content: String, 
-    val moderated: Boolean, 
+    val moderated: Boolean,
+    val moderator: Int?,
     val visibility: Visibility,
     val topics: List<Int>
 )

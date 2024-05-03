@@ -6,5 +6,7 @@ import com.example.demo.models.Visibility
 
 interface EntryRepository : CrudRepository<Entry, Int> {
     fun findByIduser(userId : Int) : List <Entry>
-    fun findByVisibilityAndModerated(pub : Visibility, mod: Boolean) : List <Entry>
+    fun findByVisibilityAndModeratedOrderByPostedDesc(pub : Visibility, mod: Boolean) : List <Entry>
+    fun findByVisibilityAndModeratedOrderByPostedAsc(pub : Visibility, mod: Boolean) : List <Entry>
+    fun findByModeratorAndModerated(modId: Int, finished: Boolean): List<Entry>
 }
