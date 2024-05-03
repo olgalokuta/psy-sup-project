@@ -5,5 +5,6 @@ import com.example.demo.models.Comment
 
 interface CommentRepository : CrudRepository<Comment, Int> {
     fun findByIdentry(entryId : Int) : List <Comment>
-    fun findByModerated(mod : Boolean) : List<Comment>
+    fun findByModeratedOrderByPostedAsc(mod : Boolean) : List<Comment>
+    fun findByModeratorAndModerated(modId: Int, mod: Boolean):List<Comment>
 }

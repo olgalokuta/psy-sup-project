@@ -9,6 +9,8 @@ tags:
     description: Entry operations
   - name: comment
     description: Comment operations
+  - name: employee
+    description: Employee operations
 paths:
   /api/users:
     post:
@@ -143,6 +145,139 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
+  /api/employees:
+    post:
+      tags:
+        - employee
+      summary: Create employee
+      operationId: createEmployee
+      requestBody: 
+        description: Created employee object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: The location of the newly updeted employee
+              schema:
+                type: string
+                format: uri
+                example: '/user/{id}'
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Server error
+    get:
+      tags:
+        - employee
+      summary: List employees
+      description: ''
+      operationId: getAllEmployees
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+        '500':
+          description: Server error
+  /api/employees/name/{username}:
+    parameters:
+    - name: username
+      in: path
+      description: Username of the employee
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+        - employee
+      summary: Get employee info
+      description: ''
+      operationId: getEmployeeByUsername
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /api/employees/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the user
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+        - employee
+      summary: Get user info
+      description: ''
+      operationId: getEmployeeById
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - employee
+      summary: Update employee
+      operationId: updateEmployeeById
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'          
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - employee
+      summary: Delete user
+      operationId: deleteEmployeeByid
+      parameters:
+        - name: id
+          in: path
+          description: The user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
   /api/entries:
     post:
       tags:
@@ -228,13 +363,20 @@ paths:
                   $ref: '#/components/schemas/Entry'
         '500':
           description: Server error
-  /api/entries/formoderation:
+  /api/entries/formoderation/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the moderator
+      required: true
+      schema:
+        type: integer
     get:
       tags:
         - entry
-      summary: List public and unmoderated entries
+      summary: List public and unmoderated entries for specific moderator
       description: ''
-      operationId: getAllUnmoderatedEntries
+      operationId: getUnmoderatedEntries
       responses:
         '200':
           description: successful operation
@@ -378,13 +520,20 @@ paths:
                   $ref: '#/components/schemas/Comment'
         '500':
           description: Server error
-  /api/comments/formoderation:
+  /api/comments/formoderation/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: ID of the moderator
+      required: true
+      schema:
+        type: integer
     get:
       tags:
         - comment
-      summary: List unmoderated comments
+      summary: List unmoderated comments by moderator
       description: ''
-      operationId: getAllUnmoderatedComments
+      operationId: getUnmoderatedComments
       responses:
         '200':
           description: successful operation
@@ -494,11 +643,41 @@ components:
           type: integer
         topics:
           type: array
+    Employee:
+      required:
+        - username
+        - email
+        - phone
+        - password
+        - role
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        email:
+          type: string
+          format: email
+          example: john@email.com
+        phone:
+          type: string
+          example: '12345'
+        name:
+          type: string
+          format: date
+        role: 
+          type: string
+          enum: [moderator, psychologist]
     Entry:
       required:
         - iduser
         - posted
         - content
+        - visibility
       properties:
         iduser:
           type: integer
@@ -509,8 +688,12 @@ components:
           format: date
         moderated:
           type: boolean
-        public:
+        moderator:
           type: boolean
+          description: Moderator responsible for entry
+        visibility:
+          type: string
+          enum: [public, private, psychologist]
         topics:
           type: array
     Comment:
@@ -532,8 +715,4 @@ components:
         identry:
           type: integer
         idanscomment:
-<<<<<<< HEAD
           type: integer
-=======
-          type: integer
->>>>>>> b441302495d17836d52efbbb227257a7251fe6b5

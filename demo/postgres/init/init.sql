@@ -59,7 +59,7 @@ create table "Comment" (
 	moderated bool                     -- отмодерирован?
 )
 ----------------------------------------------------------------------------
-create table "Worker" (
+create table "Employee" (
 	id SERIAL PRIMARY KEY,
 	phone text UNIQUE,       -- номер телефона 
 	email text,              -- почта 

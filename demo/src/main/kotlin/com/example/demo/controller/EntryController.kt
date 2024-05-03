@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.demo.repositories.EntryRepository
 import com.example.demo.models.Entry
+import com.example.demo.models.Visibility
 
 @RestController
 @CrossOrigin(origins=["http://localhost:3000"])
@@ -22,11 +23,23 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
     @GetMapping("/public")
     fun getAllPublicEntries():List<Entry> = 
-        entryRepository.findByPublicAndModerated(true,true).toList()
+        entryRepository.findByVisibilityAndModeratedOrderByPostedDesc(Visibility.public,true).toList()
 
-    @GetMapping("/formoderation")
-    fun getUnmoderatedEntries():List<Entry> = 
-        entryRepository.findByPublicAndModerated(true, false).toList()
+    @GetMapping("/formoderation/{id}")
+    fun getUnmoderatedEntries(@PathVariable("id") modId: Int):ResponseEntity<Entry?> {
+        val unfinished = entryRepository.findByModeratorAndModerated(modId, false)
+        if (unfinished.size > 0) return ResponseEntity(unfinished[0], HttpStatus.OK)
+        
+        val unmod = entryRepository.findByVisibilityAndModeratedOrderByPostedAsc(Visibility.public, false).toList()
+        for (e in unmod) {
+            if (e.moderator == null) {
+                val upd = e.copy(moderator = modId)
+                entryRepository.save(upd)
+                return ResponseEntity(upd, HttpStatus.OK)
+            }
+        }
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
 
     @PostMapping("")
     fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
@@ -51,7 +64,7 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
         }
 
         val updatedEntry = existingEntry.copy(iduser = entry.iduser, posted = entry.posted, 
-            content = entry.content, moderated = entry.moderated, public = entry.public, 
+            content = entry.content, moderated = entry.moderated, moderator = entry.moderator, visibility = entry.visibility, 
             topics = entry.topics)
         entryRepository.save(updatedEntry)
         return ResponseEntity(updatedEntry, HttpStatus.OK)
