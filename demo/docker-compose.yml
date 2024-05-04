@@ -4,6 +4,7 @@ version: '3.9'
 services: 
   kotlinapp: 
     container_name: kotlinapp
+    restart: always
     build: # this is the build context: .  
       context: .
       dockerfile: Dockerfile
