@@ -30,6 +30,10 @@ const Login = () => {
     e.preventDefault();
     setMessage("");
     setLoading(true);
+    if (username === "" || password === ""){
+      setMessage("Вы не ввели никнейм или пароль");
+      return;
+    }
 
     AuthService.login(username).then(
       (res) => {
@@ -60,6 +64,7 @@ const Login = () => {
         className={fixedInputClass}/>
       <input
         name="Пароль"
+        type="password"
         placeholder="Пароль"
         onChange={onChangePassword}
         value={password}
