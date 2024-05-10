@@ -9,10 +9,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const moveToWork = (e) => {
-    //if (currentUser.role === "moderator")
-      navigate("/moderator");
-    //else 
-    //  navigate("/psycologist");
+    navigate("/" + currentUser.role);
     window.location.reload();
   };
 

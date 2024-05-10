@@ -1,17 +1,16 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/users";
+const API_URL = "http://localhost:8080/api/employees";
+const role = "psychologist"
 
-const register = (username, email, phone, password, birth, pfp, gender, topics) => {
+const register = (username, email, phone, name, password) => {
   return axios.post(API_URL, {
     username,
     email,
     phone,
+    name,
     password,
-    birth,
-    pfp,
-    gender,
-    topics
+    role
   });
 };
 
@@ -22,14 +21,14 @@ const login = (username) => {
   })
 };
 
-const getCurrentUser = () => {
+const getCurrentEmploee = () => {
   return JSON.parse(localStorage.getItem("user"));
 };
 
 const AuthService = {
   register,
   login,
-  getCurrentUser
+  getCurrentEmploee
 }
 
 export default AuthService;

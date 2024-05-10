@@ -1,9 +1,11 @@
 import axios from "axios";
+import AuthService from "../services/authService.js";
 
 const API_URL = "http://localhost:8080/api/";
 
 const getEntries = () => {
-  return axios.get(API_URL + "entries/formoderation");
+  const emploeeId = AuthService.getCurrentEmploee().id
+  return axios.get(API_URL + "entries/formoderation" + emploeeId.toString());
 };
 
 const getComments = () => {

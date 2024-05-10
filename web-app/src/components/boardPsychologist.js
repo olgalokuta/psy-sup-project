@@ -2,7 +2,7 @@ import React from "react";
 import AuthService from "../services/authService.js";
 
 
-const BoardPsycologist = () => {
+const BoardPsychologist = () => {
     const currentUser = AuthService.getCurrentUser();
   
     return (
@@ -12,4 +12,4 @@ const BoardPsycologist = () => {
     );
 };
 
-export default BoardPsycologist;
+export default BoardPsychologist;

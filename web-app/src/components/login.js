@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AuthService from "../services/authService.js";
@@ -6,9 +6,6 @@ import Header from "./header.js";
 
 const Login = () => {
   const fixedInputClass="rounded-md appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-
-  const form = useRef();
-  const checkBtn = useRef();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -52,8 +49,8 @@ const Login = () => {
     <Header
       heading="Войдите в аккаунт"
       paragraph="Еще нет аккаунта? "
-      linkName="Зарегестрируйтесь"
-      linkUrl="/login"/>
+      linkName="Зарегистрируйтесь"
+      linkUrl="/register"/>
     <form className="mt-8 space-y-6">
       <input
         name="Никнейм"
