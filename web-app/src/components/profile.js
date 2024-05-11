@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AuthService from "../services/authService.js";
 
 const Profile = () => {
-  const currentUser = AuthService.getCurrentUser();
+  const currentUser = AuthService.getCurrentEmploee();
 
   const navigate = useNavigate();
 

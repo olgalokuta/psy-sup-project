@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/employees";
+const API_URL = "http://62.3.58.13:8080/api/employees";
 const role = "psychologist"
 
 const register = (username, email, phone, name, password) => {

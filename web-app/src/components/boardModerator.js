@@ -5,58 +5,66 @@ import AuthService from "../services/authService.js";
 
 import Entry from "./entry.js";
 
-
 const BoardModerator = () => {
-    const currentUser = AuthService.getCurrentUser();
+    const currentUser = AuthService.getCurrentEmploee();
 
     const [message, setMessage] = useState("");
-    const [allEntriesList, setAllEntriesList] = useState([]);
-    const [gotAllEntries, setGotAllEntries] = useState(false);
     const [entr, setEntr] = useState(null);
-
-    const [index, setIndex] = useState(0);
     const [user, setUser] = useState(currentUser);
+    const [gotEntry, setGotEntry] = useState(false);
     const [gotAuthor, setGotAuthor] = useState(false);
 
-    const getAllEntries = (e) => DataService.getEntries().then(
+    const getEnrtyForModeration = (e) => 
+      DataService.getEntry().then(
         (res) => {
-          setAllEntriesList(res.data);
-          setGotAllEntries(true);
+          setEntr(res.data);
+          setGotEntry(true);
+          setGotAuthor(false);
         },
-        (error) => []
-    );
+        (error) => {
+          setMessage("Ошибка сервера");
+          setGotEntry(false);
+        }
+      );
 
     const getUser = (id) => {
-        setMessage("");
-        DataService.getUserById(id).then(
-            (res) => {
-              setUser(res.data);
-              setEntr(allEntriesList[index]);
-              setGotAuthor(true);
-            },
-            (error) => setMessage("Ошибка сервера")
-        );
+      DataService.getUserById(id).then(
+          (res) => {
+            setUser(res.data);
+            setGotAuthor(true);
+          },
+          (error) => {
+            setMessage("Ошибка сервера");
+            setGotAuthor(false);
+          }
+      );
     }
 
     const updateEntry = (e) => {
-      const entry = allEntriesList[index];
+      const entry = entr;
       const moderated = {
         id: entry.id,
         iduser: entry.iduser,
         content: entry.content,
         posted: entry.posted,
         moderated: true,
-        public: entry.public,
+        moderator: entry.moderator,
+        visibility: entry.visibility,
         topics: entry.topics
       }
-      showOne();
+      setGotEntry(false);
+      loadEntry(e);
       return DataService.updateEntry(entry.id, moderated);
     }
 
     useEffect(() => {
-      if (allEntriesList.length)
-        getUser(allEntriesList[0].iduser);
-    }, [gotAllEntries]);
+      if (gotEntry) {
+        if (entr)
+          getUser(entr.iduser);
+        else
+          setMessage("Нет постов для модерации");
+      }
+    }, [gotEntry]);
 
     //1) load all posts
     //2) if we have any post
@@ -64,25 +72,12 @@ const BoardModerator = () => {
     //4) if button pressed
     //5) get new post and render it
 
-    const loadEntries = (e) => {
+    const loadEntry = (e) => {
         e.preventDefault();
-        getAllEntries(e);
+        setMessage("");
+        setGotEntry(false);
+        getEnrtyForModeration(e);
     };
-
-    const showOne = () => {
-      setIndex(index + 1);
-      console.log(index);
-
-      if (allEntriesList.length && index < allEntriesList.length) {
-        console.log(index);
-        console.log(allEntriesList);
-        getUser(allEntriesList[index].iduser);
-      }
-      else {
-        setMessage("Нет постов для модерации");
-        //setGotAllEntries(false);
-      }
-    }
 
     return (
       <div className="container mt-8 text-base">
@@ -93,27 +88,29 @@ const BoardModerator = () => {
               {message}
           </p>
         )}
-        { gotAllEntries && gotAuthor && (!message) && <Entry nickname={user.username} date={entr.posted} content={entr.content} /> }
-        { allEntriesList.length && (!message) ? (
+        { gotAuthor && <Entry nickname={user.username} date={entr.posted} content={entr.content}/>}
+        { gotEntry && (!message) ? (
+          <div>
             <div className="flex items-center justify-between mt-6">
+              <button
+                  type="button"
+                  className="w-32 px-4 py-1 font-bold rounded dark:bg-violet-600 dark:text-gray-50"
+                  onClick={loadEntry}>
+                Отклонить
+              </button>
               <button
                 type="button"
                 className="w-32 px-4 py-1 font-bold rounded dark:bg-violet-600 dark:text-gray-50"
                 onClick={updateEntry}>
               Принять
               </button>
-              <button
-                  type="button"
-                  className="w-32 px-4 py-1 font-bold rounded dark:bg-violet-600 dark:text-gray-50"
-                  onClick={showOne}>
-                Отклонить
-              </button>
             </div>
+          </div>
           ) : (
             <button
               type="button"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mt-10"
-              onClick={loadEntries}>
+              onClick={loadEntry}>
               Загрузить запись
             </button>
         )}
