@@ -49,7 +49,7 @@ const BoardModerator = () => {
         posted: entry.posted,
         moderated: true,
         moderator: entry.moderator,
-        visibility: entry.visibility,
+        visibility: "private",
         topics: entry.topics
       }
       setGotEntry(false);
