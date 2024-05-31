@@ -233,7 +233,7 @@ fun getUserById (userID : Int, u: MutableState<User?>) {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/api/")
+        .baseUrl("http://62.3.58.13:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -257,7 +257,7 @@ fun getEntryComments (entryId : Int, commentsAndAuthors : MutableState<CommentAn
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/api/")
+        .baseUrl("http://62.3.58.13:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -288,7 +288,7 @@ fun postComment (content: String, idUser: Int, entryId: Int) {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/api/")
+        .baseUrl("http://62.3.58.13:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
