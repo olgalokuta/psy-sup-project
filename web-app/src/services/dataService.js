@@ -1,7 +1,7 @@
 import axios from "axios";
 import AuthService from "../services/authService.js";
 
-const API_URL = "http://62.3.58.13:8080/api/";
+const API_URL = "http://localhost:8080/api/";
 
 const getEntry = () => {
   const emploeeId = AuthService.getCurrentEmploee().id
