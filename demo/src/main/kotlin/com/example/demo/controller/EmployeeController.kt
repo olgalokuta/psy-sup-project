@@ -8,7 +8,7 @@ import com.example.demo.models.Employee
 import com.example.demo.service.EmployeeService
 
 @RestController
-@CrossOrigin(origins=["http://localhost:3000"])
+@CrossOrigin(origins=["http://localhost:3000", "http://62.3.58.13"])
 @RequestMapping("/api/employees")
 class EmployeeController(private val employeeService: EmployeeService) {
 
