@@ -9,7 +9,7 @@ import com.example.demo.models.Entry
 import com.example.demo.models.Visibility
 
 @RestController
-@CrossOrigin(origins=["http://localhost:3000"])
+@CrossOrigin(origins=["http://localhost:3000", "http://62.3.58.13"])
 @RequestMapping("/api/entries")
 class EntryController(@Autowired private val entryRepository: EntryRepository) {
 

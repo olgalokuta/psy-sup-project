@@ -8,7 +8,7 @@ import com.example.demo.repositories.CommentRepository
 import com.example.demo.models.Comment
 
 @RestController
-@CrossOrigin(origins=["http://localhost:3000"])
+@CrossOrigin(origins=["http://localhost:3000", "http://62.3.58.13"])
 @RequestMapping("/api/comments")
 class CommentController(@Autowired private val commentRepository: CommentRepository) {
 
