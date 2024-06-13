@@ -6,10 +6,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.demo.repositories.EntryRepository
 import com.example.demo.models.Entry
-import com.example.demo.models.Visibility
 
 @RestController
-@CrossOrigin(origins=["http://localhost:3000", "http://62.3.58.13"])
 @RequestMapping("/api/entries")
 class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
@@ -23,23 +21,7 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
 
     @GetMapping("/public")
     fun getAllPublicEntries():List<Entry> = 
-        entryRepository.findByVisibilityAndModeratedOrderByPostedDesc(Visibility.public,true).toList()
-
-    @GetMapping("/formoderation/{id}")
-    fun getUnmoderatedEntries(@PathVariable("id") modId: Int):ResponseEntity<Entry?> {
-        val unfinished = entryRepository.findByModeratorAndModerated(modId, false)
-        if (unfinished.size > 0) return ResponseEntity(unfinished[0], HttpStatus.OK)
-        
-        val unmod = entryRepository.findByVisibilityAndModeratedOrderByPostedAsc(Visibility.public, false).toList()
-        for (e in unmod) {
-            if (e.moderator == null) {
-                val upd = e.copy(moderator = modId)
-                entryRepository.save(upd)
-                return ResponseEntity(upd, HttpStatus.OK)
-            }
-        }
-        return ResponseEntity(HttpStatus.NO_CONTENT)
-    }
+        entryRepository.findByPublic(true).toList()
 
     @PostMapping("")
     fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
@@ -64,8 +46,8 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
         }
 
         val updatedEntry = existingEntry.copy(iduser = entry.iduser, posted = entry.posted, 
-            content = entry.content, moderated = entry.moderated, moderator = entry.moderator, visibility = entry.visibility, 
-            topics = entry.topics)
+            content = entry.content, moderated = entry.moderated, public = entry.public, 
+            topics = entry.topics, image = entry.image)
         entryRepository.save(updatedEntry)
         return ResponseEntity(updatedEntry, HttpStatus.OK)
     }
