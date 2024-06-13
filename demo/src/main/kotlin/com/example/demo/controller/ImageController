@@ -1,0 +1,55 @@
+package com.example.demo.controller
+
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import com.example.demo.repositories.ImageRepository
+import com.example.demo.models.Image
+
+@RestController
+@RequestMapping("/api/images")
+class ImageController(@Autowired private val  imageRepository: ImageRepository) {
+
+    @GetMapping("")
+    fun getAllImage(): List<Image> =
+        imageRepository.findAll().toList()
+
+
+    @PostMapping("")
+    fun createImage(@RequestBody image: Image): ResponseEntity<Image> {
+
+        val createdImage = imageRepository.save(image)
+        return ResponseEntity(createdImage, HttpStatus.CREATED)
+    }
+
+    @GetMapping("/{id}")
+    fun getImageById(@PathVariable("id") imageId: Int): ResponseEntity<Image> {
+        val image = imageRepository.findById(imageId).orElse(null)
+        return if (image != null) ResponseEntity(image, HttpStatus.OK)
+        else ResponseEntity(HttpStatus.NOT_FOUND)
+    }
+
+    @PutMapping("/{id}")
+    fun updateImageById(@PathVariable("id")  imageId: Int, @RequestBody image: Image): ResponseEntity<Image> {
+
+        val existingImage =  imageRepository.findById(imageId).orElse(null)
+
+        if (existingImage == null) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+
+        val updatedEntry = existingImage.copy(id=image.id, directory= image.directory, bin = image.bin)
+        imageRepository.save(updatedEntry)
+        return ResponseEntity(updatedEntry, HttpStatus.OK)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteImageById(@PathVariable("id") imageId: Int): ResponseEntity<Image> {
+        if (!imageRepository.existsById(imageId)) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        imageRepository.deleteById(imageId)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
+    }
+}
