@@ -44,7 +44,8 @@ create table Entry (
 	moderated bool,                    -- отмодерирован?
 	"public" bool,                     -- публичный пост?
 	topics integer[],                  -- под какие темы подходит
-	"content" text                     -- текст поста 
+	"content" text,                   -- текст поста
+    "image" int[]                  -- фото поста
 )
 ----------------------------------------------------------------------------
 
@@ -52,19 +53,19 @@ create table Entry (
 create table "Comment" (
 	id SERIAL PRIMARY KEY,
 	identry integer REFERENCES Entry,   -- к какому посту относится
-	iduser integer REFERENCES "User", -- id автора
-	idanscomment integer,         -- id комментария, на который отвечают, если такой есть
-	posted datetime,                       -- опубликован?
+	iduser integer REFERENCES "User",   -- id автора
+	idanscomment integer,               -- id комментария, на который отвечают, если такой есть
+	posted datetime,                   -- опубликован?
 	сontent text,                      -- текст комментария
+    "image" int[],                     -- фото комментария
 	moderated bool                     -- отмодерирован?
 )
 ----------------------------------------------------------------------------
-create table "Employee" (
-	id SERIAL PRIMARY KEY,
-	phone text UNIQUE,       -- номер телефона 
-	email text,              -- почта 
-	username text UNIQUE,           
-    name text,
-	password text,
-	role as enum ('psychologist', 'moderator')
+
+----------------------------------------------------------------------------
+create table "Image" (
+    id SERIAL PRIMARY KEY,
+    directory text,
+    bin TEXT VARCHAR(100000)
 )
+----------------------------------------------------------------------------
