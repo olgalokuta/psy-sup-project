@@ -138,7 +138,10 @@ fun RadioButtons(isPublic : MutableState<Boolean>) {
     }
 }
 
+
 fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
+    var a = "public";
+    if (!isPublic) a = "private";
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
     val currentDate = sdf.format(Date())
     val entryNoId = EntryWithoutId(
@@ -146,7 +149,7 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
         posted = currentDate,
         content = text,
         moderated = false,
-        public = isPublic,
+        visibility = a,
         topics = emptyList()
     )
 
@@ -159,6 +162,7 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
 
     val retrofit = Retrofit.Builder()
         .baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://localhost:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
