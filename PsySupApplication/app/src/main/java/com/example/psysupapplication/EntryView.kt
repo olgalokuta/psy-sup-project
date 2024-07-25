@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import com.example.psysupapplication.ui.theme.PurpleGrey80
 @Composable
 fun EntryView(user : User, entry : Entry, isEditing : MutableState<Boolean>,
-                   isCommenting : MutableState<Boolean>,
-                   currentEntry: MutableState<Entry?>,
-                   inProfile: Boolean) : Unit {
+              isCommenting : MutableState<Boolean>,
+              currentEntry: MutableState<Entry?>,
+              inProfile: Boolean) : Unit {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -68,7 +68,7 @@ fun EntryView(user : User, entry : Entry, isEditing : MutableState<Boolean>,
                     )
                     if(inProfile) {
                         val text: String
-                        if (entry.public) text = "Публичный" else text = "Приватный"
+                        if (entry.visibility == "public") text = "Публичный" else text = "Приватный"
                         Text(
                             text = text,
                             color = Color.Black.copy(alpha = 0.7f),

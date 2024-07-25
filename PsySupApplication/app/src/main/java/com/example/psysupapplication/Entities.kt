@@ -18,7 +18,7 @@ data class Entry(
     var posted: String,
     var content: String,
     var moderated: Boolean,
-    var public: Boolean,
+    var visibility: String,
     var topics: List<Int>
 )
 

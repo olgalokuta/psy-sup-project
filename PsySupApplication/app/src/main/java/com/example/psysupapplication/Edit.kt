@@ -44,7 +44,7 @@ fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
     Box (
         modifier = Modifier
             .fillMaxWidth(),
-            //.fillMaxHeight(0.92f),
+        //.fillMaxHeight(0.92f),
         contentAlignment = Alignment.TopCenter
     ){
         Column (
@@ -75,10 +75,14 @@ fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
             ) {
                 RadioButtons(isPublic = isPublic)
                 Button(
+
+
                     onClick = {
+                        var a = "public";
+                        if (!isPublic.value) a = "privat";
                         if (text != "") {
                             entry.content = text
-                            entry.public = isPublic.value
+                            entry.visibility = a
                             updateEntry(entry)
                             dialogOpen = true
                             text = ""
@@ -124,7 +128,10 @@ fun updateEntry (entry : Entry) : Unit {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://localhost:8080/api/")
+        .baseUrl("http://127.0.0.1:8080/api/")
+
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -144,7 +151,10 @@ fun getUserByID (user : MutableState<User?>, id : Int) {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://localhost:8080/api/")
+        //.baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://127.0.0.1:8080/api/")
+        .baseUrl("http://10.0.2.2:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

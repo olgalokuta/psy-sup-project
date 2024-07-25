@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import android.text.style.URLSpan
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,10 +51,13 @@ fun CreatePage(u : User) : Unit {
 
     Box (
         modifier = Modifier.fillMaxWidth().fillMaxHeight(0.92f),
-        contentAlignment = Alignment.TopCenter
-    ){
+        contentAlignment = Alignment.TopCenter,
+
+        ){
         Column (
-            verticalArrangement = Arrangement.SpaceAround,
+            verticalArrangement =Arrangement.SpaceAround,
+
+            //verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -63,6 +67,7 @@ fun CreatePage(u : User) : Unit {
                 maxLines = 10,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
+
                     .padding(horizontal = 30.dp, vertical = 20.dp)
                     .fillMaxWidth()
             )
@@ -110,10 +115,13 @@ fun CreatePage(u : User) : Unit {
                 Column(modifier = Modifier.padding(all = 20.dp)) {
                     Text(text = "Пост создан!")
                 }
+
             }
         }
     }
 }
+
+
 
 @Composable
 fun RadioButtons(isPublic : MutableState<Boolean>) {
@@ -161,8 +169,10 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://62.3.58.13:8080/api/")
+        //.baseUrl("http://62.3.58.13:8080/api/")
         //.baseUrl("http://localhost:8080/api/")
+        //.baseUrl("http://127.0.0.1:8080/api/")
+        .baseUrl("http://10.0.2.2:8080/api/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -171,4 +181,10 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
     CoroutineScope(Dispatchers.IO).launch {
         val entry = api.createEntry(entryNoId)
     }
+}
+
+fun createDatabase(){
+
+
+
 }

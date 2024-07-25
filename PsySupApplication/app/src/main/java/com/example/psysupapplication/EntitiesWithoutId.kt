@@ -16,7 +16,7 @@ data class EntryWithoutId(
     val posted: String,
     val content: String,
     val moderated: Boolean,
-    val public: Boolean,
+    val visibility: String,
     val topics: List<Int>
 )
 data class CommentWithoutId(
