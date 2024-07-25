@@ -19,7 +19,8 @@ data class Entry(
     var content: String,
     var moderated: Boolean,
     var visibility: String,
-    var topics: List<Int>
+    var topics: List<Int>,
+    val photo: List<String>
 )
 
 data class Comment(

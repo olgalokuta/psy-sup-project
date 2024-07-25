@@ -1,5 +1,32 @@
 package com.example.psysupapplication
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import java.io.ByteArrayOutputStream
 import android.text.style.URLSpan
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,14 +46,14 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
+
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,10 +71,27 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePage(u : User) : Unit {
+fun CreatePage(u : User, co : Context) : Unit {
     var text by remember { mutableStateOf("") }
     var dialogOpen by remember { mutableStateOf(false) }
     val isPublic = remember { mutableStateOf(false) }
+    val ourList1 = emptyList<String>()
+
+
+
+
+    val dsf = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uri ->
+
+        uri.forEach { it ->
+            println(" every URI = $it")
+            val bitmap = MediaStore.Images.Media.getBitmap(co.contentResolver, it)
+            val outputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream)
+            var srt = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+            ourList1.plus(srt)
+        }
+    }
+
 
     Box (
         modifier = Modifier.fillMaxWidth().fillMaxHeight(0.92f),
@@ -76,7 +120,7 @@ fun CreatePage(u : User) : Unit {
                 label = { Text(text = "Ваш пост", fontSize = 24.sp) },
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.7f),
+                    .fillMaxHeight(0.6f),
             )
             Column (
                 modifier = Modifier.fillMaxHeight(),
@@ -84,10 +128,23 @@ fun CreatePage(u : User) : Unit {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 RadioButtons(isPublic = isPublic)
+
+
+                Button(onClick = {
+                    dsf.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                },
+                    modifier = Modifier
+                        .fillMaxWidth(fraction = 0.3f)
+                        .fillMaxHeight(0.3f)
+                ) {
+                    Text(text = "Добавить фото",  fontSize = 18.sp)
+                }
+
+
                 Button(
                     onClick = {
                         if (text != "") {
-                            createEntry(u.id, isPublic.value, text)
+                            createEntry(u.id, isPublic.value, text, ourList1)
                             dialogOpen = true
                             text = ""
                         }
@@ -98,7 +155,7 @@ fun CreatePage(u : User) : Unit {
                 ) {
                     Text(
                         text = "Создать пост",
-                        fontSize = 20.sp
+                        fontSize = 19.sp
                     )
                 }
             }
@@ -121,6 +178,16 @@ fun CreatePage(u : User) : Unit {
     }
 }
 
+
+fun  convertBack( base64Str : String) : Bitmap
+{
+    val decodedBytes = Base64.decode(
+        base64Str.substring(base64Str.indexOf(",")  + 1),
+        Base64.DEFAULT
+    );
+
+    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+}
 
 
 @Composable
@@ -147,7 +214,7 @@ fun RadioButtons(isPublic : MutableState<Boolean>) {
 }
 
 
-fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
+fun createEntry (userId : Int, isPublic: Boolean, text : String, photos : List<String>) : Unit {
     var a = "public";
     if (!isPublic) a = "private";
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
@@ -158,7 +225,8 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String) : Unit {
         content = text,
         moderated = false,
         visibility = a,
-        topics = emptyList()
+        topics = emptyList(),
+        photo =  photos
     )
 
     val interceptor = HttpLoggingInterceptor()

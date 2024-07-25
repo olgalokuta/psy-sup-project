@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 when (currentSt.value) {
                     false -> Enter(state, u)
                     //false -> RegistrationPage(state)
-                    else -> MainPage(u.value)
+                    else -> MainPage(u.value, this)
 //                    false -> RegistrationPage(state, u)
 //                    else -> IdentityPage(state)
                 }
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainPage(u : User?) : Unit {
+fun MainPage(u : User?, con : Context) : Unit {
     val state = remember { mutableStateOf("EntriesPage") }
     val userPostsList = remember { mutableStateOf(listOf<Entry>()) }
     val entriesAndAuthors = remember { mutableStateOf(EntryAndAuthorLists(listOf<Entry>(), listOf<User>())) }
@@ -50,7 +51,7 @@ fun MainPage(u : User?) : Unit {
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
                     "EntriesPage" -> EntriesPage(entriesAndAuthors, it)
-                    "CreateEntryPage" -> CreatePage(it)
+                    "CreateEntryPage" -> CreatePage(it, con)
                     "ProfilePage" -> ProfilePage(it, userPostsList)
                 }
             }
