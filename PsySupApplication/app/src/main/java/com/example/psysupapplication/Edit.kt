@@ -41,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
     var text by remember { mutableStateOf(entry.content) }
     var dialogOpen by remember { mutableStateOf(false) }
-    val isPublic = remember { mutableStateOf(false) }
+    var isPublic by remember { mutableStateOf(false) }
 
     Box (
         modifier = Modifier
@@ -75,13 +75,13 @@ fun EditPage(entry : Entry, isEditing : MutableState<Boolean>) : Unit {
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RadioButtons(isPublic = isPublic)
+                RadioButtons(isPublic) { isPublic = it }
                 Button(
 
 
                     onClick = {
                         var a = "public";
-                        if (!isPublic.value) a = "privat";
+                        if (!isPublic) a = "private";
                         if (text != "") {
                             entry.content = text
                             entry.visibility = a

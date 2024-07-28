@@ -20,7 +20,7 @@ data class Entry(
     var moderated: Boolean,
     var visibility: String,
     var topics: List<Int>,
-    val photo: List<String>
+    val photos: List<String>
 )
 
 data class Comment(

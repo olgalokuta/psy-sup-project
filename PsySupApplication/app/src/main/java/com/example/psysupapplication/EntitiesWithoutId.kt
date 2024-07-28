@@ -18,7 +18,7 @@ data class EntryWithoutId(
     val moderated: Boolean,
     val visibility: String,
     val topics: List<Int>,
-    val photo: List<String>
+    val photos: List<String>
 )
 data class CommentWithoutId(
     val iduser: Int,

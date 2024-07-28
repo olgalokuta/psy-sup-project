@@ -1,22 +1,16 @@
 package com.example.psysupapplication
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Base64
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,10 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import java.io.ByteArrayOutputStream
-import android.text.style.URLSpan
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,75 +26,66 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.example.psysupapplication.api.apiProvider
 import com.example.psysupapplication.api.provideApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Date
 
+const val MAX_PHOTOS_COUNT = 5
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePage(u : User, co : Context) : Unit {
+fun CreatePage(u : User, co : Context) {
     var text by remember { mutableStateOf("") }
-    var dialogOpen by remember { mutableStateOf(false) }
-    val isPublic = remember { mutableStateOf(false) }
-    val ourList1 = emptyList<String>()
+    var finishedDialogOpen by remember { mutableStateOf(false) }
+    var noTextDialogOpen by remember { mutableStateOf(false) }
+    var isPublic by remember { mutableStateOf(false) }
+    var photos by remember { mutableStateOf(listOf<Photo>()) }
 
+    val maxPhotosSize: Int = MAX_PHOTOS_COUNT - photos.size
+    val canLoadPhotos: Boolean = maxPhotosSize > 0
 
-
-
-    val dsf = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uri ->
-
-        uri.forEach { it ->
-            println(" every URI = $it")
-            val bitmap = MediaStore.Images.Media.getBitmap(co.contentResolver, it)
-            val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream)
-            var srt = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-            ourList1.plus(srt)
+    val dsf = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(maxOf(maxPhotosSize, 2))) { uris ->
+        photos = photos.toMutableList().apply {
+            addAll(uris.map(::Photo))
         }
     }
 
-
-    Box (
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.92f),
-        contentAlignment = Alignment.TopCenter,
-
-        ){
+    Box(
+        modifier = Modifier
+            .fillMaxHeight(0.92f)
+            .fillMaxHeight()
+    ) {
         Column (
-            verticalArrangement =Arrangement.SpaceAround,
-
-            //verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -113,71 +95,84 @@ fun CreatePage(u : User, co : Context) : Unit {
                 maxLines = 10,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-
                     .padding(horizontal = 30.dp, vertical = 20.dp)
                     .fillMaxWidth()
             )
             TextField(
-                value = text, onValueChange = { text = it },
+                value = text,
+                onValueChange = { text = it },
                 label = { Text(text = "Ваш пост", fontSize = 24.sp) },
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.6f),
+                    .height(200.dp)
+                    .fillMaxWidth(0.9f),
             )
             Column (
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RadioButtons(isPublic = isPublic)
-
-
-                Button(onClick = {
+                RadioButtons(isPublic) { isPublic = it }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    for (i in 0 until photos.size) {
+                        Card {
+                            AsyncImage(
+                                model = photos[i].url,
+                                contentDescription = null
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(onClick = {
+                                    photos = photos.toMutableList().apply {
+                                        removeAt(i)
+                                    }
+                                }) {
+                                    Icon(Icons.Rounded.Delete, null)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Button(
+                enabled = canLoadPhotos,
+                onClick = {
                     dsf.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
-                    modifier = Modifier
-                        .fillMaxWidth(fraction = 0.3f)
-                        .fillMaxHeight(0.3f)
-                ) {
-                    Text(text = "Добавить фото",  fontSize = 18.sp)
-                }
-
-
-                Button(
-                    onClick = {
-                        if (text != "") {
-                            createEntry(u.id, isPublic.value, text, ourList1)
-                            dialogOpen = true
+                modifier = Modifier
+                    .fillMaxWidth(fraction = 0.5f)
+            ) {
+                Text(text = "Добавить фото",  fontSize = 18.sp)
+            }
+            Button(
+                onClick = {
+                    if (text != "") {
+                        createEntry(co.contentResolver, u.id, isPublic, text, photos) {
+                            finishedDialogOpen = true
+                            photos = listOf()
                             text = ""
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(fraction = 0.7f)
-                        .fillMaxHeight(0.4f)
-                ) {
-                    Text(
-                        text = "Создать пост",
-                        fontSize = 19.sp
-                    )
-                }
-            }
-        }
-    }
-    if (dialogOpen) {
-        Dialog(onDismissRequest = {
-            dialogOpen = false
-        }) {
-            Surface(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                shape = RoundedCornerShape(size = 10.dp)
+                    } else {
+                        noTextDialogOpen = true
+                    }
+                },
+                modifier = Modifier
             ) {
-                Column(modifier = Modifier.padding(all = 20.dp)) {
-                    Text(text = "Пост создан!")
-                }
-
+                Text(
+                    text = "Создать пост",
+                    fontSize = 19.sp
+                )
             }
         }
     }
+    if (finishedDialogOpen) InfoDialog(text = "Пост создан") { finishedDialogOpen = false }
+    if (noTextDialogOpen) InfoDialog(text = "Введите текст") { noTextDialogOpen = false }
 }
 
 
@@ -191,23 +186,38 @@ fun  convertBack( base64Str : String) : Bitmap
     return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
+@Composable
+fun InfoDialog(text: String, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(size = 10.dp)
+        ) {
+            Column(modifier = Modifier.padding(all = 20.dp)) {
+                Text(text = text)
+            }
+        }
+    }
+}
 
 @Composable
-fun RadioButtons(isPublic : MutableState<Boolean>) {
+fun RadioButtons(isPublic: Boolean, onChange: (Boolean) -> Unit) {
     Box (contentAlignment = Alignment.CenterStart){
         Row (Modifier.selectableGroup(), verticalAlignment = Alignment.CenterVertically)
         {
             RadioButton(
-                selected = !isPublic.value,
-                onClick = { isPublic.value = false },
+                selected = !isPublic,
+                onClick = { onChange(false) },
                 modifier = Modifier.padding(8.dp)
             )
             Text("Приватный", fontSize = 20.sp)
 
             Spacer(modifier = Modifier.width(10.dp))
             RadioButton(
-                selected = isPublic.value,
-                onClick = { isPublic.value = true },
+                selected = isPublic,
+                onClick = { onChange(true) },
                 modifier = Modifier.padding(8.dp)
             )
             Text("Публичный", fontSize = 20.sp)
@@ -215,30 +225,23 @@ fun RadioButtons(isPublic : MutableState<Boolean>) {
     }
 }
 
+val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
 
-fun createEntry (userId : Int, isPublic: Boolean, text : String, photos : List<String>) : Unit {
-    var a = "public";
-    if (!isPublic) a = "private";
-    val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
+fun createEntry(contentResolver: ContentResolver, userId: Int, isPublic: Boolean, text: String, photos: List<Photo>, onFinish: () -> Unit) : Unit {
     val currentDate = sdf.format(Date())
     val entryNoId = EntryWithoutId(
         iduser = userId,
         posted = currentDate,
         content = text,
         moderated = false,
-        visibility = a,
+        visibility = if (isPublic) { "public" } else { "private" },
         topics = emptyList(),
-        photo =  photos
+        photos =  photos.map { it.loadBase64(contentResolver) }
     )
 
     val api = apiProvider.provideApi<EntryAPI>()
     CoroutineScope(Dispatchers.IO).launch {
         val entry = api.createEntry(entryNoId)
+        onFinish()
     }
-}
-
-fun createDatabase(){
-
-
-
 }
