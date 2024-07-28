@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.demo.repositories.EntryRepository
 import com.example.demo.models.Entry
+import com.example.demo.models.Visibility
+import org.apache.tomcat.util.codec.binary.Base64
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/entries")
@@ -20,12 +23,25 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
         entryRepository.findByIduser(userId).toList()
 
     @GetMapping("/public")
-    fun getAllPublicEntries():List<Entry> = 
-        entryRepository.findByPublic(true).toList()
+    fun getAllPublicEntries():List<Entry> =
+        entryRepository.findByVisibility(Visibility.public).toList()
+
+    data class CreateEntryDto(
+        val iduser: Int,
+        val posted: LocalDateTime,
+        val content: String,
+        val moderated: Boolean,
+        val moderator: Int?,
+        val visibility: Visibility,
+        val topics: List<Int>,
+        val photos: List<String>
+    )
 
     @PostMapping("")
-    fun createEntry(@RequestBody entry: Entry): ResponseEntity<Entry> {
-        val createdEntry = entryRepository.save(entry)
+    fun createEntry(@RequestBody entry: CreateEntryDto): ResponseEntity<Entry> {
+        val createdEntry = entryRepository.save(Entry(null, entry.iduser, entry.posted, entry.content, entry.moderated, null, entry.visibility, entry.topics, entry.photos.map {
+            Base64.decodeBase64(it)
+        }))
         return ResponseEntity(createdEntry, HttpStatus.CREATED)
     }
 
@@ -36,21 +52,17 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
                else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
+    /*
     @PutMapping("/{id}")
     fun updateEntryById(@PathVariable("id") entryId: Int, @RequestBody entry: Entry): ResponseEntity<Entry> {
-
-        val existingEntry = entryRepository.findById(entryId).orElse(null)
-
-        if (existingEntry == null) {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-
-        val updatedEntry = existingEntry.copy(iduser = entry.iduser, posted = entry.posted, 
-            content = entry.content, moderated = entry.moderated, public = entry.public, 
-            topics = entry.topics, image = entry.image)
+        val existingEntry = entryRepository.findById(entryId).orElse(null) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+        val updatedEntry = existingEntry.copy(iduser = entry.iduser, posted = entry.posted,
+            content = entry.content, moderated = entry.moderated, visibility = entry.visibility,
+            topics = entry.topics, photos = entry.photos)
         entryRepository.save(updatedEntry)
         return ResponseEntity(updatedEntry, HttpStatus.OK)
     }
+    */
 
     @DeleteMapping("/{id}")
     fun deleteEntryById(@PathVariable("id") entryId: Int): ResponseEntity<Entry> {

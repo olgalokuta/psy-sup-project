@@ -42,10 +42,9 @@ create table Entry (
 	iduser integer REFERENCES "User", -- id автора поста
 	posted datetime,                       -- опубликован?
 	moderated bool,                    -- отмодерирован?
-	"public" bool,                     -- публичный пост?
 	topics integer[],                  -- под какие темы подходит
 	"content" text,                   -- текст поста
-    "image" bytea                    -- фото поста
+    "photos" bytea[]                    -- фото поста
 )
 ----------------------------------------------------------------------------
 

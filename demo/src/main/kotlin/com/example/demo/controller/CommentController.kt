@@ -32,8 +32,9 @@ class CommentController(@Autowired private val commentRepository: CommentReposit
                else ResponseEntity(HttpStatus.NOT_FOUND)
     }
 
+    /*
     @PutMapping("/{id}")
-    fun updateCommentById(@PathVariable("id") commentId: Int, @RequestBody comment: Comment): ResponseEntity<Comment> {
+    private fun updateCommentById(@PathVariable("id") commentId: Int, @RequestBody comment: Comment): ResponseEntity<Comment> {
 
         val existingComment = commentRepository.findById(commentId).orElse(null)
 
@@ -41,12 +42,13 @@ class CommentController(@Autowired private val commentRepository: CommentReposit
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
-        val updatedComment = existingComment.copy(iduser = comment.iduser, posted = comment.posted, 
+        val updatedComment = existingComment.copy(iduser = comment.iduser, posted = comment.posted,
             content = comment.content, moderated = comment.moderated, identry = comment.identry, 
             idanscomment = comment.idanscomment,  image = comment.image)
         commentRepository.save(updatedComment)
         return ResponseEntity(updatedComment, HttpStatus.OK)
     }
+    */
 
     @DeleteMapping("/{id}")
     fun deleteCommentById(@PathVariable("id") commentId: Int): ResponseEntity<Comment> {
