@@ -59,6 +59,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.psysupapplication.api.apiProvider
+import com.example.psysupapplication.api.provideApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -229,23 +231,7 @@ fun createEntry (userId : Int, isPublic: Boolean, text : String, photos : List<S
         photo =  photos
     )
 
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(EntryAPI::class.java)
+    val api = apiProvider.provideApi<EntryAPI>()
     CoroutineScope(Dispatchers.IO).launch {
         val entry = api.createEntry(entryNoId)
     }

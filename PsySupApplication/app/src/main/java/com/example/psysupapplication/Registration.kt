@@ -27,6 +27,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.psysupapplication.api.apiProvider
+import com.example.psysupapplication.api.provideApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -125,23 +127,7 @@ fun RegistrationPage(stay : MutableState<Boolean>) : Unit {
 }
 
 fun createUser (user1 : UserWithoutId) {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(UserAPI::class.java)
+    val api = apiProvider.provideApi<UserAPI>()
     CoroutineScope(Dispatchers.IO).launch {
         val user = api.createUser(user1)
     }

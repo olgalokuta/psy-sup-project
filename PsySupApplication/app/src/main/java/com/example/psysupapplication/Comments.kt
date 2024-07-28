@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.psysupapplication.api.apiProvider
+import com.example.psysupapplication.api.provideApi
 import com.example.psysupapplication.ui.theme.Purple80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -225,23 +227,7 @@ fun CommentView(user : User, comment : Comment) {
 
 @Composable
 fun getUserById (userID : Int, u: MutableState<User?>) {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(UserAPI::class.java)
+    val api = apiProvider.provideApi<UserAPI>()
     LaunchedEffect(Unit) {
         u.value = api.getUserById(userID)
     }
@@ -252,24 +238,8 @@ fun getUserById (userID : Int, u: MutableState<User?>) {
 
 @Composable
 fun getEntryComments (entryId : Int, commentsAndAuthors : MutableState<CommentAndAuthorLists?>) {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiComment = retrofit.create(CommentAPI::class.java)
-    val apiUser = retrofit.create(UserAPI::class.java)
+    val apiComment = apiProvider.provideApi<CommentAPI>()
+    val apiUser = apiProvider.provideApi<UserAPI>()
 
     LaunchedEffect(Unit) {
         var listComments = apiComment.getEntryComments(entryId).reversed()
@@ -286,23 +256,7 @@ fun postComment (content: String, idUser: Int, entryId: Int) {
     val currentDate = sdf.format(Date())
     val comment = CommentWithoutId(idUser, currentDate, content, false, entryId, 0)
 
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val api = retrofit.create(CommentAPI::class.java)
+    val api = apiProvider.provideApi<CommentAPI>()
     CoroutineScope(Dispatchers.IO).launch {
         val c = api.createComment(comment)
     }

@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.psysupapplication.api.apiProvider
+import com.example.psysupapplication.api.provideApi
 import com.example.psysupapplication.ui.theme.PurpleGrey80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -98,24 +100,8 @@ fun EntriesInScroll(entrysAndAuthors : MutableState<EntryAndAuthorLists>, isComm
 
 @Composable
 fun getAllPublicEntries (entriesAndAuthors : MutableState<EntryAndAuthorLists>) {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-    val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
-
-    val retrofit = Retrofit.Builder()
-        //.baseUrl("http://62.3.58.13:8080/api/")
-        //.baseUrl("http://localhost:8080/api/")
-        //.baseUrl("http://127.0.0.1:8080/api/")
-        .baseUrl("http://10.0.2.2:8080/api/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiEntry = retrofit.create(EntryAPI::class.java)
-    val apiUser = retrofit.create(UserAPI::class.java)
+    val apiEntry = apiProvider.provideApi<EntryAPI>()
+    val apiUser = apiProvider.provideApi<UserAPI>()
 
     LaunchedEffect(Unit) {
         var listEntries = apiEntry.getPublicEntries().reversed()
