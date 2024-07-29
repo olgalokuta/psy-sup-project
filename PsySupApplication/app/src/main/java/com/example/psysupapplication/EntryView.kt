@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,17 +44,6 @@ fun EntryView(user : User, entry : Entry, isEditing : MutableState<Boolean>,
               isCommenting : MutableState<Boolean>,
               currentEntry: MutableState<Entry?>,
               inProfile: Boolean) : Unit {
-    val photos = remember {
-        if (entry.photos == null) {
-            listOf()
-        } else {
-            entry.photos.map {
-                val bytes = Base64.decode(it, Base64.DEFAULT)
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImageBitmap()
-            }.toList()
-        }
-    }
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -123,15 +113,22 @@ fun EntryView(user : User, entry : Entry, isEditing : MutableState<Boolean>,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
-            if (photos.isNotEmpty()) {
+            if (entry.photos != null && entry.photos.isNotEmpty()) {
                 Row(
                     modifier = Modifier
+                        .height(200.dp)
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    for (photo in photos) {
-                        Image(photo, "ASD")
+                    for (photo in entry.photos) {
+                        val bytes = Base64.decode(photo, Base64.DEFAULT)
+                        Image(
+                            modifier = Modifier.fillMaxHeight(),
+                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImageBitmap(),
+                            contentScale = ContentScale.FillHeight,
+                            contentDescription = "ASD"
+                        )
                     }
                 }
             }
