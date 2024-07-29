@@ -13,6 +13,21 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/entries")
 class EntryController(@Autowired private val entryRepository: EntryRepository) {
+    data class EntryDto(
+        val id: Int?,
+        val iduser: Int,
+        val posted: LocalDateTime,
+        val content: String,
+        val moderated: Boolean,
+        val moderator: Int?,
+        val visibility: Visibility,
+        val topics: List<Int>,
+        val photos: List<String>
+    ) {
+        fun toEntry(): Entry = Entry(null, iduser, posted, content, moderated, null, visibility, topics, photos.map {
+            Base64.decodeBase64(it)
+        })
+    }
 
     @GetMapping("")
     fun getAllEntries(): List<Entry> =
@@ -26,19 +41,8 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
     fun getAllPublicEntries():List<Entry> =
         entryRepository.findByVisibility(Visibility.public).toList()
 
-    data class CreateEntryDto(
-        val iduser: Int,
-        val posted: LocalDateTime,
-        val content: String,
-        val moderated: Boolean,
-        val moderator: Int?,
-        val visibility: Visibility,
-        val topics: List<Int>,
-        val photos: List<String>
-    )
-
     @PostMapping("")
-    fun createEntry(@RequestBody entry: CreateEntryDto): ResponseEntity<Entry> {
+    fun createEntry(@RequestBody entry: EntryDto): ResponseEntity<Entry> {
         val createdEntry = entryRepository.save(Entry(null, entry.iduser, entry.posted, entry.content, entry.moderated, null, entry.visibility, entry.topics, entry.photos.map {
             Base64.decodeBase64(it)
         }))
