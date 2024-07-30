@@ -2,6 +2,8 @@ package com.example.demo.models
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.persistence.*
+import org.hibernate.annotations.Type
+import org.hibernate.engine.jdbc.env.internal.LobTypes
 import java.time.LocalDateTime
 
 @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -20,5 +22,6 @@ data class Entry(
     val moderator: Int?,
     val visibility: Visibility,
     val topics: List<Int>,
+    @Column(columnDefinition="bytea")
     val photos: List<ByteArray>
 )
