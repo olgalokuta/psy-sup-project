@@ -118,7 +118,7 @@ fun CreatePage(u : User, co : Context) {
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    for (i in 0 until photos.size) {
+                    for (i in photos.indices) {
                         Card {
                             AsyncImage(
                                 model = photos[i].url,

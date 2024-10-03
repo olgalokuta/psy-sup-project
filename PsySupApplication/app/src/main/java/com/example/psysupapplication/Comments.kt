@@ -1,5 +1,10 @@
 package com.example.psysupapplication
 
+import android.content.ContentResolver
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +23,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.psysupapplication.api.apiProvider
 import com.example.psysupapplication.api.provideApi
+import com.example.psysupapplication.photos.PhotoView
 import com.example.psysupapplication.ui.theme.Purple80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,19 +72,26 @@ data class CommentAndAuthorLists(
 )
 
 @Composable
-fun CommentPage (entry : Entry, currentUser: User): Unit {
+fun CommentPage (co: Context, entry : Entry, currentUser: User): Unit {
     val CommentsPlusAuthors = remember { mutableStateOf<CommentAndAuthorLists?>(null) }
     val user = remember { mutableStateOf<User?>(null) }
     getUserById(entry.iduser, user)
     getEntryComments(entry.id, CommentsPlusAuthors)
-    CommentsPageIter(entry, currentUser, CommentsPlusAuthors, user)
+    CommentsPageIter(co, entry, currentUser, CommentsPlusAuthors, user)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : MutableState<CommentAndAuthorLists?>, user: MutableState<User?>) : Unit {
+fun CommentsPageIter(co: Context, entry: Entry, currentUser: User, CommentsPlusAuthors : MutableState<CommentAndAuthorLists?>, user: MutableState<User?>) : Unit {
     var commentText by rememberSaveable { mutableStateOf("") }
     var dialogOpen by remember { mutableStateOf(false) }
+    var photo by remember { mutableStateOf<Photo?>(null) } // Прикрепленная фотография для отправки
+    val dsf = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> // Открытая фотография
+        // Прикрепляем фотографию, если есть
+        if (uri != null) {
+            photo = Photo(uri)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,13 +156,21 @@ fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : Muta
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    if (photo != null) // Если картинка прикреплена
+                        IconButton(onClick = { // Кнопка открепления картинки
+                            photo = null
+                        }) { Icon(Icons.Default.Delete, contentDescription = null) }
+                    else
+                        IconButton(onClick = { // Кнопка прикрепления картинки
+                            dsf.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }) { Icon(Icons.Default.KeyboardArrowUp, contentDescription = null) }
                     TextField(
                         value = commentText,
                         onValueChange = { commentText = it },
                         placeholder = { Text(text = "Введите комментарий") }
                     )
                     IconButton(onClick = {
-                        postComment(commentText, currentUser.id, entry.id)
+                        postComment(co.contentResolver, commentText, currentUser.id, entry.id, photo)
                         commentText = ""
                         dialogOpen = true
                     }) {
@@ -161,7 +185,9 @@ fun CommentsPageIter(entry: Entry, currentUser: User, CommentsPlusAuthors : Muta
             dialogOpen = false
         }) {
             Surface(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
                 shape = RoundedCornerShape(size = 10.dp)
             ) {
                 Column(modifier = Modifier.padding(all = 20.dp)) {
@@ -221,6 +247,8 @@ fun CommentView(user : User, comment : Comment) {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
+            if (comment.photo != null)
+                PhotoView(photo = comment.photo)
         }
     }
 }
@@ -251,10 +279,10 @@ fun getEntryComments (entryId : Int, commentsAndAuthors : MutableState<CommentAn
     }
 }
 
-fun postComment (content: String, idUser: Int, entryId: Int) {
+fun postComment(resolver: ContentResolver, content: String, idUser: Int, entryId: Int, photo: Photo?) {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
     val currentDate = sdf.format(Date())
-    val comment = CommentWithoutId(idUser, currentDate, content, false, entryId, 0)
+    val comment = CommentWithoutId(idUser, currentDate, content, false, entryId, 0, photo?.loadBase64(resolver))
 
     val api = apiProvider.provideApi<CommentAPI>()
     CoroutineScope(Dispatchers.IO).launch {

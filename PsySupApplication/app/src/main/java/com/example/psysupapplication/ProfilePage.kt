@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +74,7 @@ data class ProfileInfo(
 )
 
 @Composable
-fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit {
+fun ProfilePage(co: Context,  user : User, userEntriesList : MutableState<List<Entry>>) : Unit {
     val isEditing = remember { mutableStateOf(false) }
     val isCommenting = remember { mutableStateOf(false) }
     val currentEntry = remember { mutableStateOf<Entry?>(null) }
@@ -82,7 +83,7 @@ fun ProfilePage(user : User, userEntriesList : MutableState<List<Entry>>) : Unit
             false -> {
                 if (!isCommenting.value)
                     Profile(user, userEntriesList, isEditing, isCommenting, currentEntry)
-                else currentEntry.value?.let {CommentPage(it, user) }
+                else currentEntry.value?.let { CommentPage(co, it, user) }
             }
             true -> currentEntry.value?.let { EditPage(it, currentSt) }
         }

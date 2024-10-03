@@ -26,5 +26,6 @@ data class CommentWithoutId(
     val content: String,
     val moderated: Boolean,
     val identry: Int,
-    val idanscomment: Int
+    val idanscomment: Int,
+    val photo: String? // Прикрепленная фотография
 )

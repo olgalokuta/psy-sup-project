@@ -1,5 +1,6 @@
 package com.example.psysupapplication
 
+import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -51,12 +52,12 @@ data class EntryAndAuthorLists(
 )
 
 @Composable
-fun EntriesPage(entrysAndAuthors : MutableState<EntryAndAuthorLists>, currentUser: User) : Unit {
+fun EntriesPage(co: Context, entrysAndAuthors : MutableState<EntryAndAuthorLists>, currentUser: User) : Unit {
     val isCommenting = remember { mutableStateOf(false) }
     val currentEntry = remember { mutableStateOf<Entry?>(null) }
     Crossfade(targetState = isCommenting, label = "") { currentSt ->
         when (currentSt.value) {
-            true -> currentEntry.value?.let { CommentPage(it, currentUser) }
+            true -> currentEntry.value?.let { CommentPage(co, it, currentUser) }
             false -> EntriesInScroll(entrysAndAuthors, isCommenting, currentEntry)
         }
     }

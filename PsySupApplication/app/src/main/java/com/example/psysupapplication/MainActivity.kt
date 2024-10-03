@@ -50,9 +50,9 @@ fun MainPage(u : User?, con : Context) : Unit {
         ){
             Crossfade(targetState = state, label = "") { currentSt ->
                 when (currentSt.value) {
-                    "EntriesPage" -> EntriesPage(entriesAndAuthors, it)
+                    "EntriesPage" -> EntriesPage(con, entriesAndAuthors, it)
                     "CreateEntryPage" -> CreatePage(it, con)
-                    "ProfilePage" -> ProfilePage(it, userPostsList)
+                    "ProfilePage" -> ProfilePage(con, it, userPostsList)
                 }
             }
             BottomPanel(state)
