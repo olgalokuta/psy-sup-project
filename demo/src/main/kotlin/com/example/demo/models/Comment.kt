@@ -15,5 +15,7 @@ data class Comment(
     val moderated: Boolean, 
     val moderator: Int?,
     val identry: Int,
-    val idanscomment: Int
+    val idanscomment: Int,
+    @Column(columnDefinition="bytea")
+    val photo: ByteArray? // Байты прикрепленной фотографии
 )
