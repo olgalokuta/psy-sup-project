@@ -22,6 +22,6 @@ data class Entry(
     val moderator: Int?,
     val visibility: Visibility,
     val topics: List<Int>,
-    @Column(columnDefinition="bytea")
+    @Column(columnDefinition="bytea[]")
     val photos: List<ByteArray>
 )

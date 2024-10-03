@@ -113,24 +113,8 @@ fun EntryView(user : User, entry : Entry, isEditing : MutableState<Boolean>,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
-            if (entry.photos != null && entry.photos.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    for (photo in entry.photos) {
-                        val bytes = Base64.decode(photo, Base64.DEFAULT)
-                        Image(
-                            modifier = Modifier.fillMaxHeight(),
-                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImageBitmap(),
-                            contentScale = ContentScale.FillHeight,
-                            contentDescription = "ASD"
-                        )
-                    }
-                }
+            if (entry.photos != null) {
+                PhotosView(photos = entry.photos)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -195,6 +179,10 @@ fun StaticEntry (user: User, entry : Entry) : Unit {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             )
+
+            if (entry.photos != null) {
+                PhotosView(photos = entry.photos)
+            }
         }
     }
 }
