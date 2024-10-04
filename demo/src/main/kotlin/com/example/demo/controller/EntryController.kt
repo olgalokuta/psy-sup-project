@@ -41,6 +41,10 @@ class EntryController(@Autowired private val entryRepository: EntryRepository) {
     fun getAllPublicEntries():List<Entry> =
         entryRepository.findByVisibility(Visibility.public).toList()
 
+    @GetMapping("/public/topic/{topicId}") // Получение публичных постов с темой
+    fun getAllPublicEntriesWithTopic(@PathVariable("topicId") topicId: Int): List<Entry> =
+        entryRepository.getPublicWithTopic(topicId).toList()
+
     @PostMapping("")
     fun createEntry(@RequestBody entry: EntryDto): ResponseEntity<Entry> {
         val createdEntry = entryRepository.save(Entry(null, entry.iduser, entry.posted, entry.content, entry.moderated, null, entry.visibility, entry.topics, entry.photos.map {
