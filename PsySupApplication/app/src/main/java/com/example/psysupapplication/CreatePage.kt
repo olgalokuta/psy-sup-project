@@ -8,6 +8,8 @@ import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -29,11 +31,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +47,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.ui.Alignment
 
@@ -64,6 +70,7 @@ const val MAX_PHOTOS_COUNT = 5
 @Composable
 fun CreatePage(u : User, co : Context) {
     var text by remember { mutableStateOf("") }
+    var topicIds by remember { mutableStateOf(listOf<Int>()) }
     var finishedDialogOpen by remember { mutableStateOf(false) }
     var noTextDialogOpen by remember { mutableStateOf(false) }
     var isPublic by remember { mutableStateOf(false) }
@@ -112,6 +119,14 @@ fun CreatePage(u : User, co : Context) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 RadioButtons(isPublic) { isPublic = it }
+                // Выбор тем
+                RadioTopicsList(topicIds) { enable, topicId ->
+                    topicIds = if (enable) {
+                        topicIds.toMutableList().apply { add(topicId) }
+                    } else {
+                        topicIds.toMutableList().apply { remove(topicId) }
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -153,8 +168,9 @@ fun CreatePage(u : User, co : Context) {
             Button(
                 onClick = {
                     if (text != "") {
-                        createEntry(co.contentResolver, u.id, isPublic, text, photos) {
+                        createEntry(co.contentResolver, u.id, isPublic, text, photos, topicIds) {
                             finishedDialogOpen = true
+                            topicIds = emptyList()
                             photos = listOf()
                             text = ""
                         }
@@ -203,6 +219,39 @@ fun InfoDialog(text: String, onDismiss: () -> Unit) {
 }
 
 @Composable
+fun RadioTopicsList(topicIds: List<Int>, onChange: (enable: Boolean, topicId: Int) -> Unit) { // Меню выбора тем поста
+    val topics = remember { mutableStateOf<List<Topic>?>(null) }
+    val apiTopics = apiProvider.provideApi<TopicsAPI>()
+
+    LaunchedEffect(Unit) { // Загружаем темы
+        topics.value = apiTopics.getAllTopics()
+    }
+
+    LazyRow(
+        modifier = Modifier
+            .padding(horizontal = 10.dp)
+            .scrollable(rememberScrollState(), Orientation.Horizontal),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        val topicsValue = topics.value;
+        if (topicsValue != null) {
+            items(topicsValue.size) { id ->
+                val enabled = topicIds.contains(id)
+                Button(onClick = { onChange(!enabled, id) }) {
+                    if (enabled) {
+                        Icon(Icons.Default.Delete, contentDescription = null)
+                    } else {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = topicsValue[id].topic)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun RadioButtons(isPublic: Boolean, onChange: (Boolean) -> Unit) {
     Box (contentAlignment = Alignment.CenterStart){
         Row (Modifier.selectableGroup(), verticalAlignment = Alignment.CenterVertically)
@@ -227,7 +276,7 @@ fun RadioButtons(isPublic: Boolean, onChange: (Boolean) -> Unit) {
 
 val sdf = SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss")
 
-fun createEntry(contentResolver: ContentResolver, userId: Int, isPublic: Boolean, text: String, photos: List<Photo>, onFinish: () -> Unit) : Unit {
+fun createEntry(contentResolver: ContentResolver, userId: Int, isPublic: Boolean, text: String, photos: List<Photo>, topicIds: List<Int>, onFinish: () -> Unit) : Unit {
     val currentDate = sdf.format(Date())
     val entryNoId = EntryWithoutId(
         iduser = userId,
@@ -235,8 +284,8 @@ fun createEntry(contentResolver: ContentResolver, userId: Int, isPublic: Boolean
         content = text,
         moderated = false,
         visibility = if (isPublic) { "public" } else { "private" },
-        topics = emptyList(),
-        photos =  photos.map { it.loadBase64(contentResolver) }
+        topics = topicIds,
+        photos =  photos.map { it.loadBase64(contentResolver) },
     )
 
     val api = apiProvider.provideApi<EntryAPI>()
