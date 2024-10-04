@@ -38,6 +38,11 @@ interface UserAPI {
     ) //: Response<ResponseBody>
 }
 
+interface TopicsAPI {
+    @GET("topics")
+    suspend fun getAllTopics(): List<Topic>
+}
+
 interface EntryAPI {
     @GET("entries")
     suspend fun getAllEntries() : List<Entry>
@@ -47,8 +52,8 @@ interface EntryAPI {
         @Path("id") id: Int
     ) : List<Entry>
 
-    @GET("entries/public")
-    suspend fun getPublicEntries() : List<Entry>
+    @GET("entries/public/topic/{topicId}")
+    suspend fun getPublicEntriesByTopic(@Path("topicId") id: Int) : List<Entry>
 
     @POST("entries")
     suspend fun createEntry(

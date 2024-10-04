@@ -33,3 +33,8 @@ data class Comment(
     val idanscomment: Int,
     val photo: String? // Прикрепленная фотография
 )
+
+data class Topic( // Тема
+    val id: Int,
+    val topic: String,
+)
